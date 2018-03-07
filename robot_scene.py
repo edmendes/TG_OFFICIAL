@@ -44,3 +44,18 @@ env.set_camera_rotation([1.0470, 0, 0.7854])
 #the internal name of the component is (here, atrv.motion) is displayed in the MORSE log at the end of the simulation initialisation.
 
 #id2 atrv.pose get_local_data
+
+#motion controller
+motion = MotionXYW()
+atrv.append(motion)
+motion.add_interface('ros', topic='/cmd_vel')
+
+#camera 10Hz, 320x240 image
+cam_frequency = 10
+camera = VideoCamera()
+camera.translate(x = 0.7, z= 0.5)
+camera.rotate(y = -0.0)
+camera.properties(cam_width=320,cam_height=240,cam_focal=6.,cam_near=0.1,cam_far=500)
+camera.frequency(cam_frequency)
+atrv.append(camera)
+camera.add_interface('ros',topic='/camera')
