@@ -12,7 +12,7 @@ from morse.builder import *
 # http://www.openrobots.org/morse/doc/stable/components_library.html
 #
 # 'morse add robot <name> mysim' can help you to build custom robots.
-robot = Morsy()
+robot = atrv()
 
 # The list of the main methods to manipulate your components
 # is here: http://www.openrobots.org/morse/doc/stable/user/builder_overview.html
