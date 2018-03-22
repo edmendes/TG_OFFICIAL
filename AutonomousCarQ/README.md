@@ -56,7 +56,7 @@ or, in my case:
 ```
 $ rospy AutonomousCarQ car_node.py
 ```
-Optional step: to run roslaunch instead of rospy (for each node), after create .launch file (car_nodes.launch), type:
+Optional step: to run roslaunch instead of rospy (for each node), after created .launch file (car_nodes.launch), type:
 ```
 $ roslaunch AutonomousCarQ car_nodes.launch
 ```
