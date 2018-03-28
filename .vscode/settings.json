@@ -1,3 +1,8 @@
 {
+<<<<<<< HEAD
     "python.linting.pylintEnabled": false
+=======
+    "python.linting.pylintEnabled": false,
+    "python.pythonPath": "/usr/bin/python3"
+>>>>>>> fedb827a952b14b6ad334b9969239902c6f28c5f
 }
