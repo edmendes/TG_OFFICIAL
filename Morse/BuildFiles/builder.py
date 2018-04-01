@@ -6,6 +6,8 @@ from morse.builder import *
 # ATRV 4 = wheeled outdoor robot.
 
 atrv = ATRV()
+atrv.translate(x=-31, z=-4.9)
+atrv.rotate (z = 3.14/2)
 
 #Atuador -- MOtionVW (v,omega) - This one controls the robot by changing the linear and angular velocity of the movement.
 
@@ -13,11 +15,14 @@ motion = MotionVW()
 motion.translate(z=0.3)
 atrv.append(motion)
 
-#Sensor -- Pose sensor, which provides us with the location and rotation of the robot.
+#Sensors -- Pose sensor, which provides us with the location and rotation of the robot.
 
 pose = Pose()
-pose.translate(z=0.83)
+pose.translate(z=0.82)
 atrv.append(pose)
+cam  = VideoCamera() #Camera - adding a video camera and changing its properties
+cam.properties(cam_width = 128, cam_height = 128)
+atrv.append(cam)
 
 #Middlewares -- basic socket to access the data-streams and services provided by the components. 
 
@@ -26,14 +31,14 @@ motion.add_stream('ros')
 #pose.add_service('socket')
 #motion.add_service('socket')
 
-#Environment -- he Environment method is the name of a Blender .blend file you provide (with its full path) or a pre-defined one.
+#Environment -- The Environment method is the name of a Blender .blend file you provide (with its full path) or a pre-defined one.
 
 #The Environment object also provides additional options to place and aim the default camera, by using the methods set_camera_rotation and set_camera_location.
 
 #env = Environment('indoors-1/indoor-1')
 
 env = Environment('/home/eduardo/Documents/TG_OFFICIAL/Morse/estacionamento')
-env.set_camera_location([5, -5, 6])
+env.set_camera_location([-25, -7, 2])
 env.set_camera_rotation([1.0470, 0, 0.7854])
 
 #connection to sockets: communication to simulation @ Blender

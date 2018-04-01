@@ -8,9 +8,9 @@ motion = Twist()
 
 def callback(msg):
     position = msg.pose.position
-    if position.x < 1:
+    if position.y < 1: 
         motion.linear.x = +0.5
-    if position.x > 2:
+    if position.y > 2:
         motion.linear.x = -0.5
     cmd.publish(motion)
 
