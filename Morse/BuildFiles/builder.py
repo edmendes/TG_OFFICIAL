@@ -21,6 +21,24 @@ pose = Pose()
 pose.translate(z=0.82)
 atrv.append(pose)
 
+#-------------------------------------------------
+odometry = Odometry()
+odometry.translate(z = 0.75)
+atrv.append(odometry)
+
+# Append a Sick LIDAR
+sick = Sick()
+sick.translate(x = 0.17, z = 0.83)
+atrv.append(sick)
+# Set the scanner properties
+sick.properties(scan_window = 180, resolution = 1, range = 10)
+# Create the laser arc with those properties
+sick.create_laser_arc()
+# Lower the frequency, in our demo we don't need a lot of scan, free some CPU
+sick.frequency(5)
+#-------------------------------
+
+
 #camera
 camera  = VideoCamera() #Camera - adding a video camera and changing its properties
 camera.properties(cam_width = 128, cam_height = 128)
