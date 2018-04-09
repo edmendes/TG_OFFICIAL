@@ -31,11 +31,15 @@ sick = Sick()
 sick.translate(x = 0.17, z = 0.83)
 atrv.append(sick)
 # Set the scanner properties
-sick.properties(scan_window = 180, resolution = 1, range = 10)
+sick.properties(scan_window = 180, resolution = 1, range = 50)
 # Create the laser arc with those properties
 sick.create_laser_arc()
 # Lower the frequency, in our demo we don't need a lot of scan, free some CPU
 sick.frequency(5)
+
+# Keyboard control
+keyboard = Keyboard()
+atrv.append(keyboard)
 #-------------------------------
 
 
@@ -50,6 +54,7 @@ camera.add_interface('ros',topic='/camera')
 pose.add_stream('ros')
 camera.add_stream('ros')
 motion.add_stream('ros')
+sick.add_stream('ros')
 #pose.add_service('socket')
 #motion.add_service('socket')
 

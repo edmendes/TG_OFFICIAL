@@ -33,7 +33,7 @@ def callback(msg):
     position = msg.pose.position
     if position.y < 1: 
         motion.linear.x = +0.5
-    if position.y > 5:
+    if position.y > 20:
         motion.linear.x = -0.5
     cmd.publish(motion)
 

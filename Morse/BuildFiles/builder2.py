@@ -1,76 +1,77 @@
-#! /usr/bin/env python
-"""
-This script tests the Depth camera with ROS in MORSE.
-"""
+#16  de julho - 17h00
+#teste_MORSE_1 - Edu e Nathalia 
 
-import sys
-import time
-import math
-import struct
-from morse.testing.ros import RosTestCase
-from morse.testing.testing import testlogger
+from morse.builder import *
+#Robo -- MORSE knows three main components: the robots, the sensors and the actuators (the robots are mostly supports for sensors or actuators).
+# ATRV 4 = wheeled outdoor robot.
 
-import rospy
-from geometry_msgs.msg import Twist
-from sensor_msgs.msg import PointCloud2
+atrv = ATRV() #add a car
+atrv.translate(x=5, z=0.1) #change the orientation on x, y, z
+atrv.rotate (z = 3.14/2)
 
-# Include this import to be able to use your test file as a regular
-# builder script, ie, usable with: 'morse [run|exec] base_testing.py
-try:
-    from morse.builder import *
-except ImportError:
-    pass
+#Atuador -- MOtionVW (v,omega) - This one controls the robot by changing the linear and angular velocity of the movement.
 
-def pub_vw(topic, v, w):
-    pub = rospy.Publisher(topic, Twist)
-    msg = Twist()
-    msg.linear.x = v
-    msg.angular.z = w
-    # wait 1 second for publisher
-    rospy.sleep(1.0)
-    pub.publish(msg)
+motion = MotionVW()
+motion.translate(z=0.3)
+atrv.append(motion)
 
-class DepthCameraRosTest(RosTestCase):
+#Sensors -- Pose sensor, which provides us with the location and rotation of the robot.
 
-    def setUpEnv(self):
-        """ Defines the test scenario """
+pose = Pose()
+pose.translate(z=0.82)
+atrv.append(pose)
 
-        robot = ATRV()
+#-------------------------------------------------
+odometry = Odometry()
+odometry.translate(z = 0.75)
+atrv.append(odometry)
 
-        motion = MotionVW()
-        robot.append(motion)
-        motion.add_stream('ros')
+# Append a Sick LIDAR
+sick = Sick()
+sick.translate(x = 0.17, z = 0.83)
+atrv.append(sick)
+# Set the scanner properties
+sick.properties(scan_window = 180, resolution = 1, range = 10)
+# Create the laser arc with those properties
+sick.create_laser_arc()
+# Lower the frequency, in our demo we don't need a lot of scan, free some CPU
+sick.frequency(5)
+#-------------------------------
 
-        camera = DepthCamera()
-        camera.translate(z = 1)
-        camera.frequency(3)
-        robot.append(camera)
-        camera.add_stream('ros')
 
-        env = Environment('indoors-1/boxes')
-        # No fastmode here, no MaterialIndex in WIREFRAME mode: AttributeError:
-        # 'KX_PolygonMaterial' object has no attribute 'getMaterialIndex'
+#camera
+camera  = VideoCamera() #Camera - adding a video camera and changing its properties
+camera.properties(cam_width = 128, cam_height = 128)
+atrv.append(camera)
+camera.add_interface('ros',topic='/camera')
 
-    def test_depth_camera(self):
-        rospy.init_node('morse_ros_depth_testing')
+#Middlewares -- basic socket to access the data-streams and services provided by the components. 
 
-        motion_topic = '/robot/motion'
-        camera_topic = '/robot/camera'
+pose.add_stream('ros')
+camera.add_stream('ros')
+motion.add_stream('ros')
+#pose.add_service('socket')
+#motion.add_service('socket')
 
-        pub_vw(motion_topic, 1, 1)
+#Environment -- The Environment method is the name of a Blender .blend file you provide (with its full path) or a pre-defined one.
 
-        for step in range(5):
-            msg = rospy.wait_for_message(camera_topic, PointCloud2, 10)
+#The Environment object also provides additional options to place and aim the default camera, by using the methods set_camera_rotation and set_camera_location.
 
-            # assert that : near <= z <= far
-            for i in range(0, len(msg.data) - 12, 12):
-                xyz = struct.unpack('fff', msg.data[i:i+12])
-                self.assertGreaterEqual(xyz[2], 1)
-                self.assertLessEqual(xyz[2], 20)
+env = Environment('indoors-1/indoor-1')
+atrv.add_default_interface('ros')
 
-            time.sleep(0.2) # wait for turning
+#env = Environment('/home/eduardo/Documents/TG_OFFICIAL/Morse/estacionamento')
+env.set_camera_location([25, 7, 2])
+env.set_camera_rotation([1.0470, 0, 0.7854])
 
-########################## Run these tests ##########################
-if __name__ == "__main__":
-    from morse.testing.testing import main
-    main(DepthCameraRosTest, time_modes = [TimeStrategies.BestEffort])
+#connection to sockets: communication to simulation @ Blender
+# on terminal: $ telnet localhost 4000
+
+#The motion controller we have added to the robot export one service, set_speed: to make the robot move in a circle, with linear speed 2 m/s and angular speed -1 rad/s
+
+#id1 atrv.motion set_speed [2, -1]
+
+#id1 = identifier
+#the internal name of the component is (here, atrv.motion) is displayed in the MORSE log at the end of the simulation initialisation.
+
+#id2 atrv.pose get_local_data

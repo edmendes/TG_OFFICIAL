@@ -1,7 +1,9 @@
 #! /usr/bin/env python3
 """
 Test client for the <my_first_sim> simulation environment.
+
 This simple program shows how to control a robot from Python.
+
 For real applications, you may want to rely on a full middleware,
 like ROS (www.ros.org).
 """
