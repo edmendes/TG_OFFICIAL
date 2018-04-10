@@ -6,6 +6,7 @@ Feel free to edit this template as you like!
 """
 
 from morse.builder import *
+from morse.sensors.laserscanner import *
 
 robot = ATRV()
 
@@ -33,6 +34,13 @@ keyboard.properties(ControlType = 'Position')
 # sensor.
 pose = Pose()
 robot.append(pose)
+
+odo = Odometry()
+robot.append(odo)
+
+camera = VideoCamera()
+robot.append(camera)
+
 
 #interface
 robot.add_default_interface('socket')

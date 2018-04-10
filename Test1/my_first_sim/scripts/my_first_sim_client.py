@@ -42,7 +42,7 @@ with Morse() as simu:
   sick = simu.robot.sick
   pose = simu.robot.pose
   odo = simu.robot.odo
-  cam = simu.robot.cam
+  cam = simu.robot.camera
   cam.capture(-1)
 
   v = 0.1 # velocity
