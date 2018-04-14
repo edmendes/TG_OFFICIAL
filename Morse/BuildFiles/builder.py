@@ -65,7 +65,7 @@ sick.add_stream('ros')
 #env = Environment('indoors-1/indoor-1')
 atrv.add_default_interface('ros')
 
-env = Environment('/home/eduardo/Documents/TG_OFFICIAL/Morse/estacionamento')
+env = Environment('/home/eduardo/TG_OFFICIAL/Morse/estacionamento')
 env.set_camera_location([-25, -7, 2])
 env.set_camera_rotation([1.0470, 0, 0.7854])
 
