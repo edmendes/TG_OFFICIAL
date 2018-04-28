@@ -3,7 +3,8 @@ import rospy
 from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import PointCloud2
 from geometry_msgs.msg import Twist
-
+from nav_msgs.msg import Odometry
+import numpy as np
 
 cmd = rospy.Publisher("/atrv/motion", Twist, queue_size=10)
 motion = Twist()
@@ -17,6 +18,7 @@ def callback(msg):
     cmd.publish(motion)
 
 def callback_sensor(msg) #continuar daqui
+    x1 =  msg.point_step
 
 rospy.init_node("rostuto1")
 rospy.Subscriber("/atrv/pose", PoseStamped, callback)
