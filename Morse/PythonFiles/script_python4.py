@@ -7,8 +7,6 @@ from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Twist
 import numpy as np
  
-
-
 # get the laser messages
 def callback_laser(msg):
     global curr_pose
@@ -29,24 +27,26 @@ def callback_odom(msg):
 
 def callback(msg):
     position = msg.pose.position
-    atrv_x = position.x
-    atrv_y = position.y
-    atrv_z = position.z
+    curr_pose1 =  [position.x , position.y, position.z]
 
-    print atrv_x - callback_semcam.x
+    print curr_pose1[0]
+
 
 def callback_semcam(msg):
-    
+
     d = json.loads(msg.data)
-    x = d[0]['position'][0]
-    y = d[0]['position'][1]
-    z = d[0]['position'][2]
+    sensor_x = d[0]['position'][0]
+    sensor_y = d[0]['position'][1]
+    sensor_z = d[0]['position'][2]
     object1 = d[0]['name']
 
-    print ("x: %.2f, y: %.2f, z: %.2f, object: %s." % (x, y, z, object1))
+    sensor_all = [sensor_x, sensor_y, sensor_z]
 
-    return x, y, z
- 
+    #print ("x: %.2f, y: %.2f, z: %.2f, object: %s." % (sensor_x, sensor_y, sensor_z, object1))
+def main():
+
+    print 1
+
 if __name__=='__main__':
  
     rospy.init_node("obstacle_check_node")
@@ -54,5 +54,6 @@ if __name__=='__main__':
     rospy.Subscriber('/camera', String, callback_semcam)
     rospy.Subscriber('/odom', Odometry, callback_odom) 
     rospy.Subscriber("/pose", PoseStamped, callback)
- 
+    main()
     rospy.spin() # this will block untill you hit Ctrl+C
+

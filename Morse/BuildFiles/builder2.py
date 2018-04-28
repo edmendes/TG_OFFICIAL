@@ -24,6 +24,12 @@ odometry = Odometry()
 atrv.append(odometry)
 odometry.add_interface('ros', topic="/odom",frame_id="odom", child_frame_id="base_link")
 
+pose = Pose()
+pose.translate(z=0.83)
+atrv.append(pose)
+pose.add_interface('ros', topic='/pose')
+'''
+pose.add_stream('ros')'''
 
 camera = SemanticCamera()
 atrv.append(camera)
