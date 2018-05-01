@@ -21,6 +21,6 @@ def callback_sensor(msg) #continuar daqui
     x1 =  msg.point_step
 
 rospy.init_node("rostuto1")
-rospy.Subscriber("/atrv/pose", PoseStamped, callback)
+rospy.Subscriber("/pose", PoseStamped, callback)
 rospy.Subscriber("/scan", PointCloud2, callback_sensor)
 rospy.spin() # this will block untill you hit Ctrl+C

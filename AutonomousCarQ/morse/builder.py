@@ -32,11 +32,8 @@ motion.add_stream('ros')
 
 #env = Environment('indoors-1/indoor-1')
 
-<<<<<<< HEAD
-env = Environment('/home/eduardo/Documents/TG_OFFICIAL/AutonomousCarQ/estacionamento')
-=======
-env = Environment('/home/nana/morse-1.3/data/environments/estacionamento/estacionamento')
->>>>>>> fedb827a952b14b6ad334b9969239902c6f28c5f
+env = Environment('/home/eduardo/TG_OFFICIAL/AutonomousCarQ/estacionamento')
+
 env.set_camera_location([5, -5, 6])
 env.set_camera_rotation([1.0470, 0, 0.7854])
 

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import rospy
 import json
 from sensor_msgs.msg import LaserScan
@@ -33,7 +35,7 @@ def callback(msg):
     atrv_y = position.y
     atrv_z = position.z
 
-    print atrv_x - callback_semcam.x
+   # print atrv_x - callback_semcam.x
 
 def callback_semcam(msg):
     
