@@ -9,7 +9,7 @@ def callback_laser(msg):
     laser_raw = msg.ranges
     laser_float = [float(r) for r in laser_raw]
  
-    if np.min(laser_float)<0.5:
+    if np.min(laser_float)<5.0:
         print "I bumped at (X:%.2f Y:%.2f). Please Reverse."%(curr_pose[0],curr_pose[1])
  
 # get the odometry messages
