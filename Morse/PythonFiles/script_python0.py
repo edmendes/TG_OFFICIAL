@@ -58,3 +58,4 @@ while not rospy.is_shutdown():
 
     pub.publish(speed)
     r.sleep()
+    print(x)
