@@ -28,7 +28,7 @@ def newOdom(msg):
     pitch = euler[1]
     theta = euler[2]
 
-    print(theta)
+    #print(theta)
 
 rospy.init_node ("speed_controller")
 
@@ -40,7 +40,7 @@ speed = Twist()
 r=rospy.Rate(4)
 
 goal = Point ()
-goal.x = -5
+goal.x = 0
 goal.y = -5
 
 while not rospy.is_shutdown():
@@ -58,4 +58,7 @@ while not rospy.is_shutdown():
 
     pub.publish(speed)
     r.sleep()
+
+    print(goal.x)
     print(x)
+    print(y)

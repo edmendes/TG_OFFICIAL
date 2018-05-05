@@ -12,7 +12,7 @@ atrv1.rotate(z=3.14/2)
 #adding a passive object
 table = PassiveObject('props/objects','SmallTable')
 table.setgraspable()
-table.translate(x=-31, y=20, z=-4.9)
+table.translate(x=-31, y=25, z=-4.9)
 #table.rotate(z=0.2)
 table.properties(Type = "table", Object = True, Graspable = True, Label = "TABLE")
 
