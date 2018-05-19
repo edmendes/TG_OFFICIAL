@@ -105,21 +105,23 @@ while not rospy.is_shutdown():
 
     diff = sensor_y - y
     
-    #the 1 avoids the atrv to start rotating
+    #when ref2 is equal to zero, the program will check to see if there is some table next to the car
+    #However, when ref2 is different, the car is already turning left or right, and no matter if there is
+    #a table or not. For this reason, the program goes o "else" and just check heading and bearing angle.
     if (ref2 ==0):
 
         if abs(diff) > 1 and abs(diff) < 10 and object1 == 'table':
-            #heading_angle is related to the current angle of the car base at the start
+            #heading_angle is related to the current angle of the car based at the start
 
             if abs(abs(bearing_angle) - abs(heading_angle)) > 0.05:
                 
                 while (ref1<1): 
-                    x_t = x+1000
-                    y_t = y+10
-                    ref1=1     
+                    x_t = x+1000  #x_t and y_t are responsible to give the bearing angle through atan.
+                    y_t = y+10 #example: if x_t << 0 and y_t = 0 (or next to zero) the bearing angle will be pi
+                    ref1=1    #ref1 is responsible to keep x_t and y_t with a unique value.                  
                 speed.linear.x = 1
-                speed.angular.z = -0.3
-                ref2 = 1
+                speed.angular.z = -0.3 #angular velocity: negative -> clockwise, positive ->anticlockwise
+                ref2 = 1 
                 print('a')
                 
             else: 
