@@ -14,6 +14,7 @@ x = 0.0; y = 0.0; heading_angle = 0.0
 x1 = 0.0; y1 = 0.0; theta1 = 0.0
 sensor_x = 0.0; sensor_y = 0.0; sensor_z = 0.0; object1 = 'Nothing'
 x_t =0.0; y_t =0.0
+ref2 = 0
 
 
 def newOdom1(msg):
@@ -97,43 +98,63 @@ while not rospy.is_shutdown():
     #x and y are the current position in the world, independent of the start
     inc_x = x_t - x
     inc_y = y_t - y
-    j=0
+    ref1=0
+    
 
     bearing_angle = atan2(inc_y, inc_x)
 
     diff = sensor_y - y
     
     #the 1 avoids the atrv to start rotating
-    if abs(diff) > 1 and abs(diff) < 10 and object1 == 'table':
-        #heading_angle is related to the current angle of the car base at the start
+    if (ref2 ==0):
 
-        if abs(abs(bearing_angle) - abs(heading_angle)) > 0.1:
-             
-            while (j<1): 
-                x_t = x1+5
-                y_t = y1+5
-                j=1
+        if abs(diff) > 1 and abs(diff) < 10 and object1 == 'table':
+            #heading_angle is related to the current angle of the car base at the start
+
+            if abs(abs(bearing_angle) - abs(heading_angle)) > 0.05:
+                
+                while (ref1<1): 
+                    x_t = x+1000
+                    y_t = y+10
+                    ref1=1     
+                speed.linear.x = 1
+                speed.angular.z = -0.3
+                ref2 = 1
+                print('a')
+                
+            else: 
+                speed.linear.x = 0.3
+                speed.angular.z = 0.0
+                j=0
+                print('b')
+        else:
             speed.linear.x = 1
-            speed.angular.z = 0.3
-            print('a')
-            
+            speed.angular.z= 0
+            print('c')
+    
+    else:
+        if abs(bearing_angle- heading_angle) > 0.1:
+                
+            speed.linear.x = 1
+            speed.angular.z = -0.3
+            print('a1')
+          
+                
         else: 
             speed.linear.x = 0.3
             speed.angular.z = 0.0
             j=0
-            print('b')
-    else:
-        speed.linear.x = 1
-        speed.angular.z= 0
-        print('c')
+            ref2=0
+            print('b1')
     
     pub.publish(speed)
     r.sleep()
     print(bearing_angle)
     print(heading_angle)
-    print(bearing_angle - heading_angle)
+    print(abs(bearing_angle - heading_angle))
     print(object1)
     print(diff)
+    print(ref2)
 
         
     

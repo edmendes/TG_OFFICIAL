@@ -1,7 +1,7 @@
 from morse.builder import *
  
 atrv = ATRV() #the robot
-atrv.translate(x=-31, z=-4.9) #starting location
+atrv.translate(x=-31, y=1, z=-4.9) #starting location
 atrv.rotate(z=3.14/2)
 
 #adding a dumb robot 
@@ -12,7 +12,7 @@ atrv1.rotate(z=3.14/2)
 #adding a passive object
 table = PassiveObject('props/objects','SmallTable')
 table.setgraspable()
-table.translate(x=-31, y=25, z=-4.9)
+table.translate(x=-31, y=35, z=-4.9)
 #table.rotate(z=0.2)
 table.properties(Type = "table", Object = True, Graspable = True, Label = "TABLE")
 
@@ -31,12 +31,12 @@ pose.add_interface('ros', topic='/pose')
 '''
 pose.add_stream('ros')'''
 
+""" The type of detected objects. This type is looked for as a game property of scene objects or as their ‘Type’ property. You must then add fix this property to the objects you want to be detected by the semantic camera. """
 camera = SemanticCamera()
 atrv.append(camera)
-camera.properties(tag = "table")
+camera.properties(tag = "table",cam_width=320,cam_height=240,cam_focal=6.,cam_near=0.1,cam_far=25)
 camera.translate(x=0.3, z=0.762)
 camera.add_interface('ros',topic='/camera',frame_id="odom", child_frame_id="base_link")
-
 
 #camera 10Hz, 320x240 image
 """cam_frequency = 10

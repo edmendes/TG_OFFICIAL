@@ -1,10 +1,7 @@
 {
 	"folders": [
 		{
-			"path": "/home/eduardo/Documents/TG_OFFICIAL/Morse/BuildFiles"
-		},
-		{
-			"path": "/home/eduardo/Documents/TG_OFFICIAL/Morse/PythonFiles"
+			"path": "."
 		}
 	],
 	"settings": {}
