@@ -50,7 +50,7 @@ def callback_laser(msg):
     angle_to_object = angle_segment*(index_value) # to check the angle between range 0 and the middle one
 
     min_range = min(laser_raw) #the minimum value between car and the object
-    extra_x = math.sin(angle_to_object)*min_range
+    extra_x = math.sin(angle_to_object)*min_range #it is the value of x which must be add or withdraw to pretend the object position
     extra_y = math.cos(angle_to_object)*min_range
 
 
@@ -63,6 +63,7 @@ def callback_laser(msg):
 
     print ("I bumped at (X:%.2f Y:%.2f). Please Reverse." % (curr_pose[0],curr_pose[1]))
     print(x, y)
+    print(total_array)
     print(index_value)
     print(index_min)
     print(extra_x, extra_y)
@@ -71,6 +72,7 @@ def callback_laser(msg):
     print(object_position_x-x)
     print(object_position_y-y)
     #print(msg.ranges)
+    print(msg.ranges)
 
 # get the odometry messages
 def callback_odom1(msg):
