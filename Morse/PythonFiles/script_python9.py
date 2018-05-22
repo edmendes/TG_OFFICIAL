@@ -56,6 +56,32 @@ def newOdom(msg):
     pitch = euler[1]
     heading_angle = euler[2]
 
+
+
+def callback_semcam(msg):
+    global sensor_x
+    global sensor_y
+    global sensor_z
+    global object1
+
+    #while True:
+    try:
+        d = json.loads(msg.data)
+        sensor_x = d[0]['position'][0]
+        sensor_y = d[0]['position'][1]
+        sensor_z = d[0]['position'][2]
+        object1 = d[0]['name']
+            
+    except IndexError:
+        sensor_x = 0.0
+        sensor_y = 0.0
+        sensor_z = 0.0
+        object1 = 'Nothing'
+
+    #sensor_all = [sensor_x, sensor_y, sensor_z]
+    print ("x: %.2f, y: %.2f, z: %.2f, object: %s." % (sensor_x, sensor_y, sensor_z, object1))
+    print(sensor_x)
+
 def direction(): 
     global num1
     global old_position_x
@@ -103,51 +129,18 @@ def direction():
     return direction_factor    
 
     #print(num1)
+   
+def turning_around():
+    global x_t
+    global y_t
+    global ref2
 
-    
-    
-def callback_semcam(msg):
-    global sensor_x
-    global sensor_y
-    global sensor_z
-    global object1
-
-    #while True:
-    try:
-        d = json.loads(msg.data)
-        sensor_x = d[0]['position'][0]
-        sensor_y = d[0]['position'][1]
-        sensor_z = d[0]['position'][2]
-        object1 = d[0]['name']
-            
-    except IndexError:
-        sensor_x = 0.0
-        sensor_y = 0.0
-        sensor_z = 0.0
-        object1 = 'Nothing'
-
-    #sensor_all = [sensor_x, sensor_y, sensor_z]
-    #print ("x: %.2f, y: %.2f, z: %.2f, object: %s." % (sensor_x, sensor_y, sensor_z, object1))
-    #print(sensor_x) 
-
-rospy.init_node("speed_controller")
-sub1 = rospy.Subscriber('/camera', String, callback_semcam)
-sub2 = rospy.Subscriber("/pose", PoseStamped, newOdom)
-sube = rospy.Subscriber("/odom", Odometry, newOdom1)
-pub = rospy.Publisher("/cmd_vel", Twist, queue_size=1)
-
-speed = Twist()
-r = rospy.Rate(4)
-
-while not rospy.is_shutdown():
     #x and y are the current position in the world, independent of the start
     inc_x = x_t - x
     inc_y = y_t - y
     ref1=0
     
     bearing_angle = atan2(inc_y, inc_x)
-
-    direction() #calling the function to know where the car is going
 
     diff = sensor_y - y # returns the distance between the car and the object
     
@@ -158,7 +151,7 @@ while not rospy.is_shutdown():
     
     if (ref2 ==0):
 
-        if abs(diff) > 1 and abs(diff) < 10 and object1 == 'table':
+        if abs(diff) > 1 and abs(diff) < 15 and object1 <> "Nothing":
             #heading_angle is related to the current angle of the car based at the start
 
             if abs(abs(bearing_angle) - abs(heading_angle)) > 0.05:
@@ -198,7 +191,24 @@ while not rospy.is_shutdown():
             #print('b1')
     
     pub.publish(speed)
-    r.sleep()
+    r.sleep()   
+    
+
+rospy.init_node("speed_controller")
+sub1 = rospy.Subscriber('/camera', String, callback_semcam)
+sub2 = rospy.Subscriber("/pose", PoseStamped, newOdom)
+sube = rospy.Subscriber("/odom", Odometry, newOdom1)
+pub = rospy.Publisher("/cmd_vel", Twist, queue_size=1)
+
+speed = Twist()
+r = rospy.Rate(4)
+
+while not rospy.is_shutdown():
+    
+
+    direction() #calling the function to know where the car is going
+
+    turning_around()
 
     """print(bearing_angle)
     print(heading_angle)
