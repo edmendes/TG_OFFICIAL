@@ -37,7 +37,6 @@ def newOdom1(msg):
     pitch1 = euler1[1]
     theta1 = euler1[2]
 
-
 def newOdom(msg):
     global x
     global y
@@ -55,8 +54,6 @@ def newOdom(msg):
     roll = euler[0]
     pitch = euler[1]
     heading_angle = euler[2]
-
-
 
 def callback_semcam(msg):
     global sensor_x

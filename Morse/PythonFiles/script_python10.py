@@ -15,6 +15,7 @@ import numpy as np
 
 x = 0.0; y = 0.0; heading_angle = 0.0
 sensor_x = 0.0; sensor_y = 0.0; sensor_z = 0.0; object1 = 'Nothing'
+min_range = 0.0; angle_to_object =0.0
 num1 = 0.0; old_position_x =0.0; old_position_y = 0.0; direction_factor = 0.0
 
 
@@ -77,44 +78,6 @@ def callback_semcam(msg):
     #sensor_all = [sensor_x, sensor_y, sensor_z]
     """print ("x: %.2f, y: %.2f, z: %.2f, object: %s." % (sensor_x, sensor_y, sensor_z, object1))
     print(sensor_x)"""
-    
-def callback_laser(msg):
-    global curr_pose
-    angle_segment = 0
-
-    laser_raw = msg.ranges
-    index_min = min(xrange(len(laser_raw)), key=laser_raw.__getitem__)
-    
-    total_array = len(laser_raw)+1 #count the total amount of ranges
-    angle_segment = msg.angle_increment #this is the angle between each range
-
-    half_total_array = total_array/2 #in order to get the middle range
-    index_value = index_min - half_total_array
-    angle_to_object = angle_segment*(index_value) # to check the angle between range 0 and the middle one
-
-    min_range = min(laser_raw) #the minimum value between car and the object
-    extra_x = math.sin(angle_to_object)*min_range #it is the value of x which must be add or withdraw to pretend the object position
-    extra_y = math.cos(angle_to_object)*min_range
-
-
-    if index_value > 0:
-        object_position_x = math.floor(x-extra_x)
-        object_position_y = math.ceil(y+extra_y)
-    else: 
-        object_position_x = math.floor(x+extra_x)
-        object_position_y = math.ceil(y+extra_y)
-
-    """print ("I bumped at (X:%.2f Y:%.2f). Please Reverse." %(x,y))
-    print(x, y)
-    print(total_array)
-    print(index_value)
-    print(index_min)
-    print(extra_x, extra_y)
-    print(object_position_x,object_position_y) 
-    print(min_range)
-    print(object_position_x-x)
-    print(object_position_y-y)
-    print(msg.ranges)"""
 
 def direction(): 
     global num1
@@ -146,23 +109,64 @@ def direction():
         num1 = 0
 
         if (deltaX > - 0.2 and deltaX < 0.2 and deltaY > 0.2):
-            print("Going North")
             direction_factor = 1
         elif(deltaX > 0.2 and deltaY < 0.2):
-            print("Going East")
             direction_factor = 2
         elif(deltaX < -0.2 and deltaY > - 0.2 and deltaY < 0.2):
-            print("Going West")
             direction_factor = 3
         elif(deltaX > - 0.2 and deltaX < 0.2 and deltaY < - 0.2):
-            print("Going South")
             direction_factor = 4
         else :
-            print("Wait")
+            direction_factor = 5
 
     return direction_factor    
 
     print(num1)
+
+def callback_laser(msg):
+    global curr_pose
+    global angle_to_object
+    global min_range
+    angle_segment = 0
+
+    laser_raw = msg.ranges
+    index_min = min(xrange(len(laser_raw)), key=laser_raw.__getitem__)
+    
+    total_array = len(laser_raw)+1 #count the total amount of ranges
+    angle_segment = msg.angle_increment #this is the angle between each range
+
+    half_total_array = total_array/2 #in order to get the middle range
+    index_value = index_min - half_total_array
+    angle_to_object = angle_segment*(index_value) # to check the angle between range 0 and the middle one
+
+    min_range = min(laser_raw) #the minimum value between car and the object
+    
+    
+    extra_x = math.sin(angle_to_object)*min_range #it is the value of x which must be add or withdraw to pretend the object position
+    extra_y = math.cos(angle_to_object)*min_range
+
+
+    if index_value > 0:
+        object_position_x = math.floor(x-extra_x)
+        object_position_y = math.ceil(y+extra_y)
+    else: 
+        object_position_x = math.floor(x+extra_x)
+        object_position_y = math.ceil(y+extra_y)
+
+    print ("I bumped at (X:%.2f Y:%.2f). Please Reverse." %(x,y))
+    #print(x, y)
+    #print(total_array)
+    #print(index_value)
+    #print(index_min)
+    print(extra_x, extra_y)
+    print(object_position_x,object_position_y) 
+    #print(min_range)
+    print(object_position_x-x)
+    print(object_position_y-y)
+    #print(msg.ranges)"""
+    return angle_to_object, min_range
+
+
 
 rospy.init_node("speed_controller")
 rospy.Subscriber('/scan', LaserScan, callback_laser)
@@ -179,5 +183,18 @@ r = rospy.Rate(4)
 while not rospy.is_shutdown():
 
     direction()
+
+    if direction_factor == 1:
+        print("Going North")
+    elif direction_factor == 2:
+        print("Going East")
+    elif direction_factor == 3:
+        print("Going South")
+    elif direction_factor == 4:
+        print("Going West")
+    elif direction_factor == 5:
+        print("Wait")
+    else:
+        print("Error")
 
 rospy.spin() # this will block untill you hit Ctrl+C  

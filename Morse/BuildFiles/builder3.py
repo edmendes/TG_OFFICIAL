@@ -12,17 +12,17 @@ atrv1.rotate(z=3.14/2)
 #adding a passive object
 table = PassiveObject('props/objects','SmallTable')
 table.setgraspable()
-table.translate(x=-34, y=35, z=-4.9)
+table.translate(x=-35, y=35, z=-4.9)
 table.properties(Type = "table", Object = True, Graspable = True, Label = "TABLE")
 
 table = PassiveObject('props/objects','SmallTable')
-table.setgraspable()
-table.translate(x=34, y=35, z=-4.9)
+table.setgraspable()    
+table.translate(x=35, y=35, z=-4.9)
 table.properties(Type = "table", Object = True, Graspable = True, Label = "TABLE")
 
 table3 = PassiveObject('props/objects','SmallTable')
 table3.setgraspable()
-table3.translate(x=36, y=-35, z=-4.9)
+table3.translate(x=35, y=-35, z=-4.9)
 table3.properties(Type = "table", Object = True, Graspable = True, Label = "TABLE")
 
 table4 = PassiveObject('props/objects','SmallTable')
@@ -65,7 +65,7 @@ camera.add_interface('ros',topic='/camera')"""
 #laser 10Hz, 180 degrees wide with a 180 points
 scan = Sick()
 scan.translate(x=0.3, z=0.452)
-scan.properties(tag="table",Visible_arc = True,laser_range = 20.0,resolution = 1,scan_window = 30)
+scan.properties(tag="table",Visible_arc = True,laser_range = 20.0,resolution = 1,scan_window = 50)
 scan.frequency(1)
 scan.create_laser_arc()
 scan.add_interface('ros', topic='/scan',frame_id="laser", child_frame_id="base_link")
