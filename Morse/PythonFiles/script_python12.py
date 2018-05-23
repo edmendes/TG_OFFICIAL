@@ -242,7 +242,7 @@ def turning_around(distance_between_objects_x, distance_between_objects_y,buffer
     global ref2
     global diffx, diffy
 
-    turn_choose = 0 #zero indicates that the car intend to turn left, 1 turn right
+    turn_choose = 1 #zero indicates that the car intend to turn left, 1 turn right
     
     if ref2 < 1: #ref2 is responsile to keep the diffx and diffy the same until complete the turning process
         diffx = abs(distance_between_objects_x) # returns the distance between the car and the object
@@ -254,55 +254,52 @@ def turning_around(distance_between_objects_x, distance_between_objects_y,buffer
     angle_objective = abs(bearing_angle - heading_angle)
 
    
-    if(buffer==1 and turn_choose==0 and diffy < 12):
-        ref2 = 1
-        bearing_angle = math.pi
+    if(buffer==1 and turn_choose==0 and diffy < 12): #Going North, Turn Right, DeltaY between object and car is 12
+        ref2 = 1    #started process of turning around
+        bearing_angle = math.pi #in this case heading angle is pi/2. Thus, to go to West, it needs to turn right til reach pi.
 
-        if abs(angle_objective) > 0.1:
-            print("Xo")
-            speed.linear.x = 0.5
+        if abs(angle_objective) > 0.1: #Turning Right until bearing angle-heading angle be less than 0.1
+            print("Xo1")
+            speed.linear.x = 1
             speed.angular.z = 0.3
         else:
-            print("errado")
             ref2 = 0
             speed.linear.x = 0.0
             speed.angular.z = 0.0
             print(speed.angular.z)
             time.sleep(0.1)
     
-    elif(buffer==1 and turn_choose==1 and diffy < 12):    
+    elif(buffer==1 and turn_choose==1 and diffy < 12): #Going North, Turn Left, DeltaY between object and car is 12
         ref2 = 1
         bearing_angle = 0
 
         if abs(angle_objective) > 0.1:
-            print("Xo")
-            speed.linear.x = 1.5
+            print("Xo1")
+            speed.linear.x = 2
             speed.angular.z = -0.3
         else:
-            print("errado")
             ref2 = 0
             speed.linear.x = 0.0
             speed.angular.z = 0.0
             print(speed.angular.z)
             time.sleep(0.1)
 
-    elif(buffer==2 and turn_choose==0 and diffx < 12):    
+    elif(buffer==2 and turn_choose==0 and diffx < 12): #Going East, Turn Right, DeltaY between object and car is 12   
         ref2 = 1
         bearing_angle = math.pi/2
 
         if abs(angle_objective) > 0.1:
-            print("Xo1")
+            print("Xo2")
             speed.linear.x = 1
             speed.angular.z = 0.3
         else:
-            print("errado1")
             ref2 = 0
             speed.linear.x = 0.0
             speed.angular.z = 0.0
             print(speed.angular.z)
             time.sleep(0.1)
 
-    elif(buffer==2 and turn_choose==1 and diffx < 12):    
+    elif(buffer==2 and turn_choose==1 and diffx < 12): #Going East, Turn Left, DeltaY between object and car is 12    
         ref2 = 1
         bearing_angle = -math.pi/2
 
@@ -311,46 +308,73 @@ def turning_around(distance_between_objects_x, distance_between_objects_y,buffer
             speed.linear.x = 2
             speed.angular.z = -0.3
         else:
-            print("errado2")
             ref2 = 0
             speed.linear.x = 0.0
             speed.angular.z = 0.0
             print(speed.angular.z)
             time.sleep(0.1)
     
-    elif(buffer==3 and turn_choose==0 and diffy < 12):    
+    elif(buffer==3 and turn_choose==0 and diffy < 12): #Going South, Turn Right, DeltaY between object and car is 12    
         ref2 = 1
         bearing_angle = 0
 
         if abs(angle_objective) > 0.1:
-            print("Xo2")
+            print("Xo3")
             speed.linear.x = 1
             speed.angular.z = 0.3
         else:
-            print("errado2")
             ref2 = 0
             speed.linear.x = 0.0
             speed.angular.z = 0.0
             print(speed.angular.z)
             time.sleep(0.1)
 
-    elif(buffer==3 and turn_choose==1 and diffy < 12):    
+    elif(buffer==3 and turn_choose==1 and diffy < 12): #Going South, Turn Left, DeltaY between object and car is 12   
         ref2 = 1
         bearing_angle = -math.pi
 
         if abs(angle_objective) > 0.1:
-            print("Xo1")
+            print("Xo3")
             speed.linear.x = 2
             speed.angular.z = -0.3
         else:
-            print("errado1")
+            ref2 = 0
+            speed.linear.x = 0.0
+            speed.angular.z = 0.0
+            print(speed.angular.z)
+            time.sleep(0.1)
+
+    elif(buffer==4 and turn_choose==0 and diffx < 12): #Going West, Turn Right, DeltaY between object and car is 12    
+        ref2 = 1
+        bearing_angle = -math.pi/2
+
+        if abs(angle_objective) > 0.1:
+            print("Xo4")
+            speed.linear.x = 1
+            speed.angular.z = 0.3
+        else:
+            ref2 = 0
+            speed.linear.x = 0.0
+            speed.angular.z = 0.0
+            print(speed.angular.z)
+            time.sleep(0.1)
+
+    elif(buffer==4 and turn_choose==1 and diffx < 12): #Going West, Turn Left, DeltaY between object and car is 12    
+        ref2 = 1
+        bearing_angle = math.pi/2
+
+        if abs(angle_objective) > 0.1:
+            print("Xo4")
+            speed.linear.x = 2
+            speed.angular.z = -0.3
+        else:
             ref2 = 0
             speed.linear.x = 0.0
             speed.angular.z = 0.0
             print(speed.angular.z)
             time.sleep(0.1)
     else:
-        speed.linear.x = 0.0
+        speed.linear.x = 1
         speed.angular.z = 0
     
     print(buffer) #the last direction value , North, East, South, West
