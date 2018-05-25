@@ -158,13 +158,13 @@ def direction():
         #print("This is y2: %.4f and this is y1: %.4f, DeltaY: %.4f " %(y, old_position_y, deltaY))
         num1 = 0
 
-        if (deltaX > - 0.025 and deltaX < 0.025 and deltaY > 0.025): #in this case x do not change too much and y is increasing faster which indicates that the car is going to North
+        if (deltaX > - 0.05 and deltaX < 0.05 and deltaY > 0.05): #in this case x do not change too much and y is increasing faster which indicates that the car is going to North
             direction_factor = 1
-        elif(deltaX > 0.025  and deltaY> -0.025  and  deltaY < 0.025):#in this case y do not change too much and x is increasing faster which indicates that the car is going to East
+        elif(deltaX > 0.05  and deltaY> -0.05 and  deltaY < 0.05):#in this case y do not change too much and x is increasing faster which indicates that the car is going to East
             direction_factor = 2
-        elif(deltaX > - 0.025  and deltaX < 0.025  and deltaY < - 0.025 ): #in this case x do not change too much and y is decreasing faster which indicates that the car is going to South
+        elif(deltaX > - 0.05  and deltaX < 0.05  and deltaY < - 0.05 ): #in this case x do not change too much and y is decreasing faster which indicates that the car is going to South
             direction_factor = 3
-        elif(deltaX < -0.025  and deltaY > - 0.025  and deltaY < 0.025 ): #in this case y do not change too much and x is decreasing faster which indicates that the car is going North
+        elif(deltaX < -0.05  and deltaY > - 0.05 and deltaY < 0.05 ): #in this case y do not change too much and x is decreasing faster which indicates that the car is going North
             direction_factor = 4
         else :
             direction_factor = 5 #an exception to all those cases
@@ -253,7 +253,7 @@ def turning_around(distance_between_objects_x, distance_between_objects_y,buffer
     global bearing_angle
     global ref2
     global diffx, diffy
-
+    print("aaaaaaaaaaaaaaaaaaaaaaaaS")
     turn_choose = 1 #zero indicates that the car intend to turn left, 1 turn right
     
     if ref2 < 1: #ref2 is responsile to keep the diffx and diffy the same until complete the turning process
@@ -441,7 +441,7 @@ def detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3 ):
     """print(laser_x1)
     print(laser_x2)"""
 
-    if lateral_laser_max < 3.9:
+    if lateral_laser_max < 4.9:
         if heading_angle > (-math.pi/2-0.75) and heading_angle <  (-math.pi/2+0.75):
             ast = -math.pi/2
         elif heading_angle > (-0.75) and heading_angle < (0.75):
@@ -454,13 +454,13 @@ def detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3 ):
             ast = -math.pi
 
         pid_angle = PID(ast, heading_angle)
-        pid_straight_line = PID(1.8, lateral_laser)
+        pid_straight_line = PID(2, lateral_laser)
 
-        if lateral_laser < 1.80 or (lateral_laser > 2.2 and lateral_laser <3):
+        if lateral_laser < 1.90 or (lateral_laser > 2.1 and lateral_laser <4.5):
             speed.linear.x = 1 + pid_angle
             speed.angular.z = pid_angle - pid_straight_line
         
-        elif lateral_laser > 5:
+        elif lateral_laser > 4.5:
             speed.linear.x = 0
             speed.angular.z = 0
         

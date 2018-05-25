@@ -54,7 +54,7 @@ camera.add_interface('ros',topic='/camera',frame_id="odom", child_frame_id="base
 
 #Infrared 
 infraredEs1 = Sick()
-infraredEs1.properties(Visible_arc = True,laser_range = 4,resolution = 1,scan_window = 50)
+infraredEs1.properties(Visible_arc = True,laser_range = 5,resolution = 1,scan_window = 50)
 infraredEs1.translate(0, 0.35, 0) 
 infraredEs1.rotate(0, 0, 1.57)
 infraredEs1.create_laser_arc()
