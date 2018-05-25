@@ -54,7 +54,7 @@ camera.add_interface('ros',topic='/camera',frame_id="odom", child_frame_id="base
 
 #Infrared 
 infraredEs1 = Sick()
-infraredEs1.properties(Visible_arc = True,laser_range = 5,resolution = 1,scan_window = 50)
+infraredEs1.properties(Visible_arc = True,laser_range = 4,resolution = 1,scan_window = 50)
 infraredEs1.translate(0, 0.35, 0) 
 infraredEs1.rotate(0, 0, 1.57)
 infraredEs1.create_laser_arc()
@@ -65,7 +65,7 @@ atrv.append(infraredEs1)
 #laser 10Hz, 180 degrees wide with a 180 points
 scan = Sick()
 scan.translate(x=0.3, z=0.452)
-scan.properties(Visible_arc = True,laser_range = 20.0,resolution = 1,scan_window = 50)
+scan.properties(Visible_arc = True,laser_range = 20.0,resolution = 1,scan_window = 60)
 scan.frequency(1)
 scan.create_laser_arc()
 scan.add_interface('ros', topic='/scan',frame_id="laser", child_frame_id="base_link")

@@ -171,6 +171,236 @@ def direction():
 
     return direction_factor, deltaX, deltaY    
 
+def object_scenary_position(index_value, angle_to_object, min_range, direction_factor):
+    global object_position_x 
+    global object_position_y
+    global buffer  #in order to keep the last state of movement
+
+    if direction_factor == 1:
+        extra_x = math.sin(angle_to_object)*min_range #it is the value of x which must be add or withdraw to pretend the object position
+        extra_y = math.cos(angle_to_object)*min_range
+
+        if index_value > 0:
+            object_position_x = math.floor(x-extra_x)
+            object_position_y = math.ceil(y+extra_y)
+        else: 
+            object_position_x = math.ceil(x+extra_x)
+            object_position_y = math.ceil(y+extra_y)
+
+        buffer = direction_factor
+
+    elif direction_factor == 2:
+        extra_x = math.cos(angle_to_object)*min_range #it is the value of x which must be add or withdraw to pretend the object position
+        extra_y = math.sin(angle_to_object)*min_range
+
+        if index_value > 0:
+            object_position_x = math.ceil(x+extra_x)
+            object_position_y = math.ceil(y+extra_y)
+        else: 
+            object_position_x = math.ceil(x+extra_x)
+            object_position_y = math.floor(y-extra_y)
+        
+        buffer = direction_factor
+
+    elif direction_factor == 3:
+        extra_x = math.sin(angle_to_object)*min_range #it is the value of x which must be add or withdraw to pretend the object position
+        extra_y = math.cos(angle_to_object)*min_range
+
+        if index_value > 0:
+            object_position_x = math.ceil(x+extra_x)
+            object_position_y = math.floor(y-extra_y)
+        else: 
+            object_position_x = math.floor(x-extra_x)
+            object_position_y = math.floor(y-extra_y)
+        
+        buffer = direction_factor
+    
+    elif direction_factor == 4:
+        extra_x = math.cos(angle_to_object)*min_range #it is the value of x which must be add or withdraw to pretend the object position
+        extra_y = math.sin(angle_to_object)*min_range
+
+        if index_value > 0:
+            object_position_x = math.floor(x-extra_x)
+            object_position_y = math.floor(y-extra_y)
+        else: 
+            object_position_x = math.floor(x-extra_x)
+            object_position_y = math.ceil(y+extra_y)
+
+        buffer = direction_factor
+    else:
+        extra_x = math.sin(angle_to_object)*min_range #it is the value of x which must be add or withdraw to pretend the object position
+        extra_y = math.cos(angle_to_object)*min_range
+
+        if index_value > 0:
+            object_position_x = 10000
+            object_position_y = 10000
+        else: 
+            object_position_x = 10000
+            object_position_y = 10000
+
+    distance_between_objects_x = object_position_x-x
+    distance_between_objects_y = object_position_y-y
+
+    """print(extra_x, extra_y)"""
+    #print(object_position_x,object_position_y)
+    """print(distance_between_objects_x)
+    print(distance_between_objects_y)"""
+
+    return distance_between_objects_x, distance_between_objects_y, buffer
+
+def turning_around(distance_between_objects_x, distance_between_objects_y,buffer):
+    #buffer: 1 - North, 2 - East, 3 - South, 4 -West
+    global bearing_angle
+    global ref2
+    global diffx, diffy
+
+    turn_choose = 1 #zero indicates that the car intend to turn left, 1 turn right
+    
+    if ref2 < 1: #ref2 is responsile to keep the diffx and diffy the same until complete the turning process
+        diffx = abs(distance_between_objects_x) # returns the distance between the car and the object
+        diffy = abs(distance_between_objects_y)
+    else:
+        diffy = diffy
+        diffx = diffx
+
+    angle_objective = abs(bearing_angle - heading_angle)
+
+   
+    if(buffer==1 and turn_choose==0 and diffy < 12): #Going North, Turn Right, DeltaY between object and car is 12
+        ref2 = 1    #started process of turning around
+        bearing_angle = math.pi #in this case heading angle is pi/2. Thus, to go to West, it needs to turn right til reach pi.
+
+        if abs(angle_objective) > 0.1: #Turning Right until bearing angle-heading angle be less than 0.1
+            print("Xo1")
+            speed.linear.x = 1
+            speed.angular.z = 0.3
+        else:
+            ref2 = 0
+            speed.linear.x = 0.0
+            speed.angular.z = 0.0
+            print(speed.angular.z)
+            time.sleep(0.1)
+    
+    elif(buffer==1 and turn_choose==1 and diffy < 12): #Going North, Turn Left, DeltaY between object and car is 12
+        ref2 = 1
+        bearing_angle = 0
+
+        if abs(angle_objective) > 0.1:
+            print("Xo1")
+            speed.linear.x = 2
+            speed.angular.z = -0.3
+        else:
+            ref2 = 0
+            speed.linear.x = 0.0
+            speed.angular.z = 0.0
+            print(speed.angular.z)
+            time.sleep(0.1)
+
+    elif(buffer==2 and turn_choose==0 and diffx < 12): #Going East, Turn Right, DeltaY between object and car is 12   
+        ref2 = 1
+        bearing_angle = math.pi/2
+
+        if abs(angle_objective) > 0.1:
+            print("Xo2")
+            speed.linear.x = 1
+            speed.angular.z = 0.3
+        else:
+            ref2 = 0
+            speed.linear.x = 0.0
+            speed.angular.z = 0.0
+            print(speed.angular.z)
+            time.sleep(0.1)
+
+    elif(buffer==2 and turn_choose==1 and diffx < 12): #Going East, Turn Left, DeltaY between object and car is 12    
+        ref2 = 1
+        bearing_angle = -math.pi/2
+
+        if abs(angle_objective) > 0.1:
+            print("Xo2")
+            speed.linear.x = 2
+            speed.angular.z = -0.3
+        else:
+            ref2 = 0
+            speed.linear.x = 0.0
+            speed.angular.z = 0.0
+            print(speed.angular.z)
+            time.sleep(0.1)
+    
+    elif(buffer==3 and turn_choose==0 and diffy < 12): #Going South, Turn Right, DeltaY between object and car is 12    
+        ref2 = 1
+        bearing_angle = 0
+
+        if abs(angle_objective) > 0.1:
+            print("Xo3")
+            speed.linear.x = 1
+            speed.angular.z = 0.3
+        else:
+            ref2 = 0
+            speed.linear.x = 0.0
+            speed.angular.z = 0.0
+            print(speed.angular.z)
+            time.sleep(0.1)
+
+    elif(buffer==3 and turn_choose==1 and diffy < 12): #Going South, Turn Left, DeltaY between object and car is 12   
+        ref2 = 1
+        bearing_angle = -math.pi
+
+        if abs(angle_objective) > 0.1:
+            print("Xo3")
+            speed.linear.x = 2
+            speed.angular.z = -0.3
+        else:
+            ref2 = 0
+            speed.linear.x = 0.0
+            speed.angular.z = 0.0
+            print(speed.angular.z)
+            time.sleep(0.1)
+
+    elif(buffer==4 and turn_choose==0 and diffx < 12): #Going West, Turn Right, DeltaY between object and car is 12    
+        ref2 = 1
+        bearing_angle = -math.pi/2
+
+        if abs(angle_objective) > 0.1:
+            print("Xo4")
+            speed.linear.x = 1
+            speed.angular.z = 0.3
+        else:
+            ref2 = 0
+            speed.linear.x = 0.0
+            speed.angular.z = 0.0
+            print(speed.angular.z)
+            time.sleep(0.1)
+
+    elif(buffer==4 and turn_choose==1 and diffx < 12): #Going West, Turn Left, DeltaY between object and car is 12    
+        ref2 = 1
+        bearing_angle = math.pi/2
+
+        if abs(angle_objective) > 0.1:
+            print("Xo4")
+            speed.linear.x = 2
+            speed.angular.z = -0.3
+        else:
+            ref2 = 0
+            speed.linear.x = 0.0
+            speed.angular.z = 0.0
+            print(speed.angular.z)
+            time.sleep(0.1)
+    else:
+        speed.linear.x = 1
+        speed.angular.z = 0
+    
+    """print(buffer) #the last direction value , North, East, South, West
+    #print(turn_choose) #0 Turn Left, 1 Turn Right
+    print(diffy) #Distance Between Object and the car
+    print(diffx)
+    print(angle_objective) #Angle that a want to reach
+    print(bearing_angle)
+    print(heading_angle)"""
+    print("a")
+
+    pub.publish(speed)
+    r.sleep()   
+    
 def PID(wanted_value, current_value):
     global previousError, Integral
     Kp = 0.5
@@ -192,7 +422,7 @@ def PID(wanted_value, current_value):
 
     return PIDvalue
 
-def detecting_sidewalk(lateral_laser, lateral_laser_max):
+def detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3 ):
     global num2, laser_x1, laser_x2
 
     
@@ -205,20 +435,20 @@ def detecting_sidewalk(lateral_laser, lateral_laser_max):
         laser_x2 = lateral_laser - laser_x1
         num2 = 0
 
-    diff_lateral_laser = lateral_laser_max - lateral_laser    
+    #diff_lateral_laser = lateral_laser_max - lateral_laser    
     print("Lateral laser %.5f" %lateral_laser)
     print("Lateral Max %.5f" %lateral_laser_max)
-    print(laser_x1)
-    print(laser_x2)
+    """print(laser_x1)
+    print(laser_x2)"""
 
-    if diff_lateral_laser < 2:
-        if heading_angle > (-math.pi/2-0.6) and heading_angle <  (-math.pi/2+0.6):
+    if lateral_laser_max < 3.9:
+        if heading_angle > (-math.pi/2-0.75) and heading_angle <  (-math.pi/2+0.75):
             ast = -math.pi/2
-        elif heading_angle > (-0.6) and heading_angle < (0.6):
+        elif heading_angle > (-0.75) and heading_angle < (0.75):
             ast = 0
-        elif heading_angle > (math.pi/2-0.6) and heading_angle <  (math.pi/2+0.6):
+        elif heading_angle > (math.pi/2-0.75) and heading_angle <  (math.pi/2+0.75):
             ast = math.pi/2
-        elif heading_angle > (math.pi -0.6) and heading_angle < (math.pi+0.6) :
+        elif heading_angle > (math.pi -0.75) and heading_angle < (math.pi+0.75) :
             ast = math.pi
         else:
             ast = -math.pi
@@ -244,19 +474,17 @@ def detecting_sidewalk(lateral_laser, lateral_laser_max):
                 speed.angular.z = 0.02
             
             else: 
-                speed.linear.x = 0.0
-                speed.angular.z = 0.0
+                speed.linear.x = 1
+                speed.angular.z = 0.00
 
-        print("pid_angle: %.5f"%pid_angle)
+        """print("pid_angle: %.5f"%pid_angle)
         print("pid_straight_line: %.5f"%pid_straight_line)
-        print(speed.angular.z)
+        print(speed.angular.z)"""
 
     else: 
-        speed.linear.x = 0.5
-        speed.angular.z = 0.0
+        turning_around(i1, i2, i3)
     
-
-    
+  
 
     pub.publish(speed)
     r.sleep() 
@@ -278,7 +506,9 @@ while not rospy.is_shutdown():
 
     z1, z2, z3 = direction()
 
-    detecting_sidewalk(lateral_laser, lateral_laser_max)
+    i1, i2, i3 = object_scenary_position(index_value, angle_to_object,min_range, z1)
+
+    detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3)
 
 
     if direction_factor == 1:
