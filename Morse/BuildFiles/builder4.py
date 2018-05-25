@@ -54,9 +54,9 @@ camera.add_interface('ros',topic='/camera',frame_id="odom", child_frame_id="base
 
 #Infrared 
 infraredEs1 = Sick()
-infraredEs1.properties(Visible_arc = True,laser_range = 5,resolution = 1,scan_window = 5)
+infraredEs1.properties(Visible_arc = True,laser_range = 5,resolution = 1,scan_window = 50)
 infraredEs1.translate(0, 0.35, 0) 
-infraredEs1.rotate(1.57, 0, 1.57)
+infraredEs1.rotate(0, 0, 1.57)
 infraredEs1.create_laser_arc()
 infraredEs1.frequency(5)
 infraredEs1.add_interface('ros', topic='/scan1',frame_id="laser", child_frame_id="base_link")
@@ -88,6 +88,6 @@ motion.add_interface('ros', topic='/cmd_vel')
 
 # Set the environment
 env = Environment('/home/eduardo/TG_OFFICIAL/Morse/estacionamento')
-env.set_camera_location([-28, 27, 2])
-env.set_camera_rotation([1.0470, 0, 3*0.7854+0.2])
+env.set_camera_location([-26.5, 27, 2])
+env.set_camera_rotation([1.0470, 0, 3*0.7854])
 atrv.add_default_interface('ros')

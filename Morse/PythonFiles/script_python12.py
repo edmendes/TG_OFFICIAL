@@ -92,8 +92,8 @@ def callback_laser(msg):
 
     angle_segment = 0
 
-    laser_raw = msg.ranges
-    index_min = min(xrange(len(laser_raw)), key=laser_raw.__getitem__)
+    laser_raw = msg.ranges #a group of multiple vectors which contains the distance between the car and an object
+    index_min = min(xrange(len(laser_raw)), key=laser_raw.__getitem__) #get the vector number which contains the minimum value of the range mentioned above
     
     total_array = len(laser_raw)+1 #count the total amount of ranges
     angle_segment = msg.angle_increment #this is the angle between each range
@@ -159,7 +159,7 @@ def direction():
 
     return direction_factor, deltaX, deltaY    
 
-def object_scenary_position(index_value, angle_to_object, min_range, direction_factor):#, direction_factor):
+def object_scenary_position(index_value, angle_to_object, min_range, direction_factor):
     global object_position_x 
     global object_position_y
     global buffer  #in order to keep the last state of movement
