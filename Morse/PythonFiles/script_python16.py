@@ -87,7 +87,6 @@ def callback_semcam(msg):
     print(sensor_x)"""
 
 def callback_laser(msg):
-    global curr_pose
     global angle_to_object
     global min_range
     global index_value
@@ -97,8 +96,8 @@ def callback_laser(msg):
     laser_raw = msg.ranges #a group of multiple vectors which contains the distance between the car and an object
     index_min = min(xrange(len(laser_raw)), key=laser_raw.__getitem__) #get the vector number which contains the minimum value of the range mentioned above
     
-    total_array = len(laser_raw)+1 #count the total amount of ranges
-    angle_segment = msg.angle_increment #this is the angle between each range
+    total_array = len(laser_raw)+1 #count the total amount of vectors 
+    angle_segment = msg.angle_increment #this is the angle between each vector
 
     half_total_array = total_array/2 #in order to get the middle range
     index_value = index_min - half_total_array
@@ -135,12 +134,15 @@ def direction():
     global deltaX, deltaY
     global direction_factor
 
+    tolerance_angle = 0.2
+
     #Old_positions keep the variable with a freeze value for 0.4 seconds due to 
     #time.sleep function. DeltaX or Y represents the current position minus the 
     #old position which was freezed some seconds ago. According with this value, it is
     #possible to check what direction the car is going.
 
-    if (num1 < 2):
+
+    if (num1 < 2): #the num1 is a buffer, the value of x and y should be stored for 0.03s to compare to a current value.
         old_position_x = x
         old_position_y = y
         time.sleep(0.01)
@@ -158,13 +160,14 @@ def direction():
         #print("This is y2: %.4f and this is y1: %.4f, DeltaY: %.4f " %(y, old_position_y, deltaY))
         num1 = 0
 
-        if (deltaX > - 0.05 and deltaX < 0.05 and deltaY > 0.05): #in this case x do not change too much and y is increasing faster which indicates that the car is going to North
+
+        if (deltaX > -tolerance_angle and deltaX < tolerance_angle  and deltaY > tolerance_angle ): #in this case x do not change too much and y is increasing faster which indicates that the car is going to North
             direction_factor = 1
-        elif(deltaX > 0.05  and deltaY> -0.05 and  deltaY < 0.05):#in this case y do not change too much and x is increasing faster which indicates that the car is going to East
+        elif(deltaX > tolerance_angle  and deltaY> -tolerance_angle and  deltaY < tolerance_angle ):#in this case y do not change too much and x is increasing faster which indicates that the car is going to East
             direction_factor = 2
-        elif(deltaX > - 0.05  and deltaX < 0.05  and deltaY < - 0.05 ): #in this case x do not change too much and y is decreasing faster which indicates that the car is going to South
+        elif(deltaX > - tolerance_angle  and deltaX < tolerance_angle  and deltaY < -tolerance_angle  ): #in this case x do not change too much and y is decreasing faster which indicates that the car is going to South
             direction_factor = 3
-        elif(deltaX < -0.05  and deltaY > - 0.05 and deltaY < 0.05 ): #in this case y do not change too much and x is decreasing faster which indicates that the car is going North
+        elif(deltaX < -tolerance_angle  and deltaY > - tolerance_angle  and deltaY < tolerance_angle  ): #in this case y do not change too much and x is decreasing faster which indicates that the car is going West
             direction_factor = 4
         else :
             direction_factor = 5 #an exception to all those cases
@@ -248,13 +251,13 @@ def object_scenary_position(index_value, angle_to_object, min_range, direction_f
 
     return distance_between_objects_x, distance_between_objects_y, buffer
 
-def turning_around(distance_between_objects_x, distance_between_objects_y,buffer):
+def turning_around(distance_between_objects_x, distance_between_objects_y,buffer, choice):
     #buffer: 1 - North, 2 - East, 3 - South, 4 -West
-    global bearing_angle
-    global ref2
-    global diffx, diffy
-    print("aaaaaaaaaaaaaaaaaaaaaaaaS")
-    turn_choose = 1 #zero indicates that the car intend to turn left, 1 turn right
+    global bearing_angle #it is the angle which needed to make the car be directed to the objective, for example to North for West the desired angle is math.pi()
+    global ref2 #responsible to check if the car is going straight or curve
+    global diffx, diffy #it is the abs value of distance between car and object. 
+    print("Initiating the turning left or right movement...")
+    turn_choose = choice #zero indicates that the car intend to turn left, 1 turn right and 2 move ahead. 
     
     if ref2 < 1: #ref2 is responsile to keep the diffx and diffy the same until complete the turning process
         diffx = abs(distance_between_objects_x) # returns the distance between the car and the object
@@ -279,7 +282,7 @@ def turning_around(distance_between_objects_x, distance_between_objects_y,buffer
             speed.linear.x = 0.0
             speed.angular.z = 0.0
             print(speed.angular.z)
-            time.sleep(0.1)
+            time.sleep(0.1) #not sure if it is necessary
     
     elif(buffer==1 and turn_choose==1 and diffy < 12): #Going North, Turn Left, DeltaY between object and car is 12
         ref2 = 1
@@ -287,7 +290,7 @@ def turning_around(distance_between_objects_x, distance_between_objects_y,buffer
 
         if abs(angle_objective) > 0.1:
             print("Xo1")
-            speed.linear.x = 2
+            speed.linear.x = 2      
             speed.angular.z = -0.3
         else:
             ref2 = 0
@@ -403,7 +406,7 @@ def turning_around(distance_between_objects_x, distance_between_objects_y,buffer
     
 def PID(wanted_value, current_value):
     global previousError, Integral
-    Kp = 0.5
+    Kp = 0.5 #this constants were attributed based on tests. 
     Ki = 0.001
     Kd = 0.05
     
@@ -422,17 +425,17 @@ def PID(wanted_value, current_value):
 
     return PIDvalue
 
-def detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3 ):
+def detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3, turn_choice):
     global num2, laser_x1, laser_x2
 
     
     if num2 < 1:
-        laser_x1 = lateral_laser
+        laser_x1 = lateral_laser #minimum distance between car an sidewalk
         #time.sleep(0.1)
-        num2 = num2 +1
+        num2 = num2 +1 #buffer to check the laser minimum distance in different moments
 
     elif num2 == 1:
-        laser_x2 = lateral_laser - laser_x1
+        laser_x2 = lateral_laser - laser_x1 #it is the difference between two different moments
         num2 = 0
 
     #diff_lateral_laser = lateral_laser_max - lateral_laser    
@@ -441,30 +444,30 @@ def detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3 ):
     """print(laser_x1)
     print(laser_x2)"""
 
-    if lateral_laser_max < 4.9:
-        if heading_angle > (-math.pi/2-0.75) and heading_angle <  (-math.pi/2+0.75):
-            ast = -math.pi/2
+    if lateral_laser_max < 4.9 and laser_x2 < 1: #if the car follow these statements it should go straight or should correct it movement to go straight
+        if heading_angle > (-math.pi/2-0.75) and heading_angle <  (-math.pi/2+0.75): #if the heading angle is between this values, the car is going West, so the heading angle must be directed to -pi/2
+            desired_angle = -math.pi/2
         elif heading_angle > (-0.75) and heading_angle < (0.75):
-            ast = 0
+            desired_angle = 0
         elif heading_angle > (math.pi/2-0.75) and heading_angle <  (math.pi/2+0.75):
-            ast = math.pi/2
+            desired_angle = math.pi/2
         elif heading_angle > (math.pi -0.75) and heading_angle < (math.pi+0.75) :
-            ast = math.pi
+            desired_angle = math.pi
         else:
-            ast = -math.pi
+            desired_angle = -math.pi
 
-        pid_angle = PID(ast, heading_angle)
-        pid_straight_line = PID(2, lateral_laser)
+        pid_angle = PID(desired_angle, heading_angle) #controller to keep the car near to the desired angle
+        pid_straight_line = PID(2, lateral_laser) #contoreller to keep the car in a proper distance to the sidewalk
 
         if lateral_laser < 1.90 or (lateral_laser > 2.1 and lateral_laser <4.5):
             speed.linear.x = 1 + pid_angle
-            speed.angular.z = pid_angle - pid_straight_line
+            speed.angular.z = pid_angle - pid_straight_line 
         
         elif lateral_laser > 4.5:
             speed.linear.x = 0
             speed.angular.z = 0
         
-        else:  #final adjustments
+        else:  #final adjustments, when the car is almost riding straigh it keeps it going straight
             if laser_x2 < -0.001:
                 speed.linear.x = 1
                 speed.angular.z = -0.02
@@ -482,7 +485,7 @@ def detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3 ):
         print(speed.angular.z)"""
 
     else: 
-        turning_around(i1, i2, i3)
+        turning_around(i1, i2, i3, 1)
     
   
 
@@ -508,7 +511,7 @@ while not rospy.is_shutdown():
 
     i1, i2, i3 = object_scenary_position(index_value, angle_to_object,min_range, z1)
 
-    detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3)
+    detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3, 1) #the last statement indicates if is turning left - 0 or right - 1 and also keeping the movement
 
 
     if direction_factor == 1:
