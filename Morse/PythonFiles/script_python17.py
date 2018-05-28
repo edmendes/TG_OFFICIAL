@@ -19,7 +19,8 @@ x = 0.0; y = 0.0; heading_angle = 0.0
 curr_pose = (0,0)
 sensor_x = 0.0; sensor_y = 0.0; sensor_z = 0.0; object1 = 'Nothing'
 min_range = 0.0; angle_to_object =0.0; index_value =0.0
-num2= 0.0; lateral_laser = 0.0; laser_x1 =0.0; laser_x2 =0.0; lateral_laser_max = 0.0
+
+num2= 0.0; lateral_laser = 0.0; laser_x1 =0.0; laser_x2 =0.0; lateral_laser_max = 0.0; desired_angle=0
 num1 = 0.0; old_position_x =0.0; old_position_y = 0.0; direction_factor = 0.0; deltaX =0.0; deltaY =0.0
 object_position_x = 0.0; object_position_y =0.0; buffer = 0.0
 bearing_angle = 0; ref2 = 0; diffx = 0.0; diffy = 0.0
@@ -275,11 +276,11 @@ def turning_around(distance_between_objects_x, distance_between_objects_y,buffer
 
         if abs(angle_objective) > 0.1: #Turning Right until bearing angle-heading angle be less than 0.1
             print("Xo1")
-            speed.linear.x = 1
+            speed.linear.x = 1.2
             speed.angular.z = 0.3
         else:
             ref2 = 0
-            speed.linear.x = 0.0
+            speed.linear.x = 1.0
             speed.angular.z = 0.0
             print(speed.angular.z)
             time.sleep(0.1) #not sure if it is necessary
@@ -290,11 +291,11 @@ def turning_around(distance_between_objects_x, distance_between_objects_y,buffer
 
         if abs(angle_objective) > 0.1:
             print("Xo1")
-            speed.linear.x = 2      
+            speed.linear.x = 2
             speed.angular.z = -0.3
         else:
             ref2 = 0
-            speed.linear.x = 0.0
+            speed.linear.x = 1.0
             speed.angular.z = 0.0
             print(speed.angular.z)
             time.sleep(0.1)
@@ -305,11 +306,11 @@ def turning_around(distance_between_objects_x, distance_between_objects_y,buffer
 
         if abs(angle_objective) > 0.1:
             print("Xo2")
-            speed.linear.x = 1
+            speed.linear.x = 1.2
             speed.angular.z = 0.3
         else:
             ref2 = 0
-            speed.linear.x = 0.0
+            speed.linear.x = 1.0
             speed.angular.z = 0.0
             print(speed.angular.z)
             time.sleep(0.1)
@@ -324,7 +325,7 @@ def turning_around(distance_between_objects_x, distance_between_objects_y,buffer
             speed.angular.z = -0.3
         else:
             ref2 = 0
-            speed.linear.x = 0.0
+            speed.linear.x = 1.0
             speed.angular.z = 0.0
             print(speed.angular.z)
             time.sleep(0.1)
@@ -335,11 +336,11 @@ def turning_around(distance_between_objects_x, distance_between_objects_y,buffer
 
         if abs(angle_objective) > 0.1:
             print("Xo3")
-            speed.linear.x = 1
+            speed.linear.x = 1.2
             speed.angular.z = 0.3
         else:
             ref2 = 0
-            speed.linear.x = 0.0
+            speed.linear.x = 1.0
             speed.angular.z = 0.0
             print(speed.angular.z)
             time.sleep(0.1)
@@ -354,7 +355,7 @@ def turning_around(distance_between_objects_x, distance_between_objects_y,buffer
             speed.angular.z = -0.3
         else:
             ref2 = 0
-            speed.linear.x = 0.0
+            speed.linear.x = 1.0
             speed.angular.z = 0.0
             print(speed.angular.z)
             time.sleep(0.1)
@@ -365,11 +366,11 @@ def turning_around(distance_between_objects_x, distance_between_objects_y,buffer
 
         if abs(angle_objective) > 0.1:
             print("Xo4")
-            speed.linear.x = 1
+            speed.linear.x = 1.2
             speed.angular.z = 0.3
         else:
             ref2 = 0
-            speed.linear.x = 0.0
+            speed.linear.x = 1.0
             speed.angular.z = 0.0
             print(speed.angular.z)
             time.sleep(0.1)
@@ -384,7 +385,7 @@ def turning_around(distance_between_objects_x, distance_between_objects_y,buffer
             speed.angular.z = -0.3
         else:
             ref2 = 0
-            speed.linear.x = 0.0
+            speed.linear.x = 1.0
             speed.angular.z = 0.0
             print(speed.angular.z)
             time.sleep(0.1)
@@ -426,7 +427,15 @@ def PID(wanted_value, current_value):
     return PIDvalue
 
 def detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3, turn_choice):
-    global num2, laser_x1, laser_x2
+    global num2, laser_x1, laser_x2, desired_angle
+
+    if turn_choice == 0: #this was used to give the curve moment a smoothly movement
+        minimum_laser_difference = 2
+        laser_max_option = 5
+    
+    elif turn_choice == 1:
+        minimum_laser_difference =1
+        laser_max_option = 4.9
 
     
     if num2 < 1:
@@ -444,26 +453,31 @@ def detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3, turn_choice
     """print(laser_x1)
     print(laser_x2)"""
 
-    if lateral_laser_max < 4.9 and laser_x2 < 1: #if the car follow these statements it should go straight or should correct it movement to go straight
-        if heading_angle > (-math.pi/2-0.75) and heading_angle <  (-math.pi/2+0.75): #if the heading angle is between this values, the car is going West, so the heading angle must be directed to -pi/2
+    if lateral_laser_max <= laser_max_option and laser_x2 < minimum_laser_difference: #if the car follow these statements it should go straight or should correct it movement to go straight
+        if heading_angle > (-math.pi/2-0.75) and heading_angle < (-math.pi/2+0.75): #if the heading angle is between this values, the car is going West, so the heading angle must be directed to -pi/2
             desired_angle = -math.pi/2
         elif heading_angle > (-0.75) and heading_angle < (0.75):
             desired_angle = 0
-        elif heading_angle > (math.pi/2-0.75) and heading_angle <  (math.pi/2+0.75):
+        elif heading_angle > (math.pi/2-0.75) and heading_angle < (math.pi/2+0.75):
             desired_angle = math.pi/2
         elif heading_angle > (math.pi -0.75) and heading_angle < (math.pi+0.75) :
             desired_angle = math.pi
-        else:
+        elif heading_angle >= (-math.pi) and heading_angle <(-math.pi + 0.75):
             desired_angle = -math.pi
+        else:
+            desired_angle = desired_angle
+
+
+        print(desired_angle)
 
         pid_angle = PID(desired_angle, heading_angle) #controller to keep the car near to the desired angle
         pid_straight_line = PID(2, lateral_laser) #contoreller to keep the car in a proper distance to the sidewalk
 
-        if lateral_laser < 1.90 or (lateral_laser > 2.1 and lateral_laser <4.5):
-            speed.linear.x = 1 + pid_angle
+        if lateral_laser < 1.90 or (lateral_laser > 2.1 and lateral_laser < 4.5):
+            speed.linear.x = 1 + pid_angle - pid_straight_line
             speed.angular.z = pid_angle - pid_straight_line 
         
-        elif lateral_laser > 4.5:
+        elif lateral_laser > 5.0:
             speed.linear.x = 0
             speed.angular.z = 0
         
@@ -483,6 +497,9 @@ def detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3, turn_choice
         """print("pid_angle: %.5f"%pid_angle)
         print("pid_straight_line: %.5f"%pid_straight_line)
         print(speed.angular.z)"""
+
+        print(speed.linear.x)
+        print(speed.angular.z)
 
     else: 
         turning_around(i1, i2, i3, turn_choice)
@@ -511,7 +528,7 @@ while not rospy.is_shutdown():
 
     i1, i2, i3 = object_scenary_position(index_value, angle_to_object,min_range, z1)
 
-    detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3, 0) #the last statement indicates if is turning left - 0 or right - 1 and also keeping the movement
+    detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3, 1) #the last statement indicates if is turning left - 0 or right - 1 and also keeping the movement
 
 
     if direction_factor == 1:
