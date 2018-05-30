@@ -193,7 +193,7 @@ def object_scenary_position(index_value, angle_to_object, min_range, direction_f
 
         wind_rose = direction_factor
     else:
-        extra_x = math.sin(angle_to_object)*min_range #it is the value of x which must be add or withdraw to pretend the object position
+        extra_x = math.sin(angle_to_object)*min_range #it is the value of x which must be add or withdraw to estimate the object position
         extra_y = math.cos(angle_to_object)*min_range
 
         if index_value > 0:

@@ -15,8 +15,9 @@ from tf.transformations import euler_from_quaternion
 from math import atan2
 import numpy as np
 
-deltaX = 0.0; deltaY =0.0; direction_factor = 0;  #buffers
-num1 = 0.0 #iteration
+deltaX = 0.0; deltaY =0.0; direction_factor = 0; diffx = 0.0; diffy = 0.0; previousError = 0.0; Integral = 0.0 #buffers
+num1 = 0.0; ref2 = 0.0 #iteration
+ref2 = 0.0
 
 class Agent():
     
@@ -27,6 +28,8 @@ class Agent():
         self.scan_subscriber = rospy.Subscriber('/scan', LaserScan, self.callback_laser)
         self.scan1_subscriber = rospy.Subscriber('/scan1', LaserScan, self.callback_laser1)        
 
+        self.pub = rospy.Publisher("/cmd_vel", Twist, queue_size=1)
+
         self.pose = PoseStamped()
         self.laser = LaserScan()
         self.laser1 = LaserScan()
@@ -34,6 +37,7 @@ class Agent():
         self.rate = rospy.Rate(4)
         
         self.heading_angle = 0.0
+        self.bearing_angle = 0.0
         self.direction_factor = 0
         self.wind_rose = 0      #wind_rose is responsible to store the last state when the car is in a crossroad
         
@@ -259,8 +263,193 @@ class Agent():
 
         return final_choice
 
+    def turning_around(self, distance_between_objects_x, distance_between_objects_y,wind_rose, final_choice):
 
+        #wind_rose: 1 - North, 2 - East, 3 - South, 4 -West
+        #bearing_angle #it is the angle which needed to make the car be directed to the objective, for example to North for West the desired angle is math.pi()
+        
+        global ref2 #responsible to check if the car is going straight or curve
+        global diffx, diffy #it is the abs value of distance between car and object. 
+        
+        print("Initiating the turning left or right movement...")
+        turn_choose = final_choice #zero indicates that the car intend to turn left, 1 turn right and 2 move ahead. 
+        
+        if ref2 < 1: #ref2 is responsile to keep the diffx and diffy the same until complete the turning process
+            diffx = abs(distance_between_objects_x) # returns the distance between the car and the object
+            diffy = abs(distance_between_objects_y)
+        else:
+            diffy = diffy
+            diffx = diffx
 
+        angle_objective = abs(self.bearing_angle - self.heading_angle)
+
+    
+        if(wind_rose==1 and turn_choose==0 and diffy < 12): #Going North, Turn Right, DeltaY between object and car is 12
+            ref2 = 1    #started process of turning around
+            self.bearing_angle = math.pi #in this case heading angle is pi/2. Thus, to go to West, it needs to turn right til reach pi.
+
+            if abs(angle_objective) > 0.1: #Turning Right until bearing angle-heading angle be less than 0.1
+                print("Xo1")
+                self.speed.linear.x = 1.2
+                self.speed.angular.z = 0.3
+            else:
+                ref2 = 0
+                self.speed.linear.x = 1.0
+                self.speed.angular.z = 0.0
+                print(self.speed.angular.z)
+                time.sleep(0.1) #not sure if it is necessary
+        
+        elif(wind_rose==1 and turn_choose==1 and diffy < 12): #Going North, Turn Left, DeltaY between object and car is 12
+            ref2 = 1
+            self.bearing_angle = 0
+
+            if abs(angle_objective) > 0.1:
+                print("Xo1")
+                self.speed.linear.x = 2
+                self.speed.angular.z = -0.3
+            else:
+                ref2 = 0
+                self.speed.linear.x = 1.0
+                self.speed.angular.z = 0.0
+                print(self.speed.angular.z)
+                time.sleep(0.1)
+
+        elif(wind_rose==2 and turn_choose==0 and diffx < 12): #Going East, Turn Right, DeltaY between object and car is 12   
+            ref2 = 1
+            self.bearing_angle = math.pi/2
+
+            if abs(angle_objective) > 0.1:
+                print("Xo2")
+                self.speed.linear.x = 1.2
+                self.speed.angular.z = 0.3
+            else:
+                ref2 = 0
+                self.speed.linear.x = 1.0
+                self.speed.angular.z = 0.0
+                print(self.speed.angular.z)
+                time.sleep(0.1)
+
+        elif(wind_rose==2 and turn_choose==1 and diffx < 12): #Going East, Turn Left, DeltaY between object and car is 12    
+            ref2 = 1
+            self.bearing_angle = -math.pi/2
+
+            if abs(angle_objective) > 0.1:
+                print("Xo2")
+                self.speed.linear.x = 2
+                self.speed.angular.z = -0.3
+            else:
+                ref2 = 0
+                self.speed.linear.x = 1.0
+                self.speed.angular.z = 0.0
+                print(self.speed.angular.z)
+                time.sleep(0.1)
+        
+        elif(wind_rose==3 and turn_choose==0 and diffy < 12): #Going South, Turn Right, DeltaY between object and car is 12    
+            ref2 = 1
+            self.bearing_angle = 0
+
+            if abs(angle_objective) > 0.1:
+                print("Xo3")
+                self.speed.linear.x = 1.2
+                self.speed.angular.z = 0.3
+            else:
+                ref2 = 0
+                self.speed.linear.x = 1.0
+                self.speed.angular.z = 0.0
+                print(speed.angular.z)
+                time.sleep(0.1)
+
+        elif(wind_rose==3 and turn_choose==1 and diffy < 12): #Going South, Turn Left, DeltaY between object and car is 12   
+            ref2 = 1
+            self.bearing_angle = -math.pi
+
+            if abs(angle_objective) > 0.1:
+                print("Xo3")
+                self.speed.linear.x = 2
+                self.speed.angular.z = -0.3
+            else:
+                ref2 = 0
+                self.speed.linear.x = 1.0
+                self.speed.angular.z = 0.0
+                print(self.speed.angular.z)
+                time.sleep(0.1)
+
+        elif(wind_rose==4 and turn_choose==0 and diffx < 12): #Going West, Turn Right, DeltaY between object and car is 12    
+            ref2 = 1
+            self.bearing_angle = -math.pi/2
+
+            if abs(angle_objective) > 0.1:
+                print("Xo4")
+                self.speed.linear.x = 1.2
+                self.speed.angular.z = 0.3
+            else:
+                ref2 = 0
+                self.speed.linear.x = 1.0
+                self.speed.angular.z = 0.0
+                print(self.speed.angular.z)
+                time.sleep(0.1)
+
+        elif(wind_rose==4 and turn_choose==1 and diffx < 12): #Going West, Turn Left, DeltaY between object and car is 12    
+            ref2 = 1
+            self.bearing_angle = math.pi/2
+
+            if abs(angle_objective) > 0.1:
+                print("Xo4")
+                self.speed.linear.x = 2
+                self.speed.angular.z = -0.3
+            else:
+                ref2 = 0
+                self.speed.linear.x = 1.0
+                self.speed.angular.z = 0.0
+                print(self.speed.angular.z)
+                time.sleep(0.1)
+
+        elif   (turn_choose==2):
+            self.speed.linear.x = 2
+            self.speed.angular.z = -1
+
+        else:
+            self.speed.linear.x = 1
+            self.speed.angular.z = 0
+        
+        """print(wind_rose) #the last direction value , North, East, South, West
+        #print(turn_choose) #0 Turn Left, 1 Turn Right
+        print(diffx,diffy) #Distance Between Object and the car
+        print(angle_objective) #Angle that a want to reach
+        print(bearing_angle)
+        print(heading_angle)"""
+        print("a")
+
+        self.pub.publish(self.speed)
+        self.rate.sleep()   
+
+    def PID(self, wanted_value, current_value):
+        
+        global previousError, Integral
+        
+        Kp = 0.5 #this constants were attributed based on tests. 
+        Ki = 0.001
+        Kd = 0.05
+        
+
+        error = wanted_value - current_value
+        Proportional = error
+        Integral = Integral + error
+        Differential = error - previousError
+
+        PIDvalue = (Kp*Proportional) + (Ki*Integral) + (Kd*Differential)
+        print("Error: %.7f" %error)
+        print("Proportional: %.7f" %Proportional)
+        print("Integral: %.7f" %Integral)
+        print("Differential: %.7f" %Differential)
+        previousError = abs(error) - abs(previousError)
+
+        return PIDvalue
+
+    
+    
+    
+    
     def agent_action(self):
         rospy.loginfo("Estoy Ca")
         
@@ -278,11 +467,15 @@ class Agent():
             
             distance_between_objects_x, distance_between_objects_y = self.object_scenary_position(index_value, angle_to_object, min_range, self.direction_factor, self.pose.pose.position.x, self.pose.pose.position.y)
             
-            choice = self.wind_rose_function(self.wind_rose, 1) #second attribute: 1 - Want to go North, 2 - Want to go East, 3 - Want to go South, 4 - Want to go West
-                                                                #choice is the Q learning option
-            print("Where I want to go %d" %choice) 
-            print(self.direction_factor, deltaX, deltaY)
-            print(distance_between_objects_x, distance_between_objects_y, self.wind_rose)
+            final_choice = self.wind_rose_function(self.wind_rose, 1) #second attribute: 1 - Want to go North, 2 - Want to go East, 3 - Want to go South, 4 - Want to go West #choice is the Q learning option
+                                                                
+            #self.turning_around(distance_between_objects_x,distance_between_objects_y, self.wind_rose, final_choice) #choose the next movement
+            
+
+            
+            print("Where I want to go %d" %final_choice) 
+            """print(self.direction_factor, deltaX, deltaY)
+            print(distance_between_objects_x, distance_between_objects_y, self.wind_rose)"""
 
             self.rate.sleep()
         rospy.spin()
