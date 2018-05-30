@@ -5,15 +5,11 @@ import json
 import sys
 import time
 import math
-import operator
 from sensor_msgs.msg import LaserScan
-from nav_msgs.msg import Odometry
-from std_msgs.msg import String
 from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Twist
 from tf.transformations import euler_from_quaternion
 from math import atan2
-import numpy as np
 
 deltaX = 0.0; deltaY =0.0; direction_factor = 0; diffx = 0.0; diffy = 0.0; previousError = 0.0; Integral = 0.0 #buffers
 laser_x1 =0.0; laser_x2 = 0.0 #buffers
@@ -405,8 +401,8 @@ class ReactiveAgent():
                 time.sleep(0.1)
 
         elif   (turn_choose==2):
-            self.speed.linear.x = 2
-            self.speed.angular.z = -1
+            self.speed.linear.x = 1.7
+            self.speed.angular.z = -0.8
 
         else:
             self.speed.linear.x = 1
@@ -573,4 +569,4 @@ if __name__=='__main__':
 
     rospy.init_node("speed_controller")
     agent = ReactiveAgent()
-    agent.agent_action(1) #1 - North, 2 - East, 3 - South, 4 - West
+    agent.agent_action(3) #1 - North, 2 - East, 3 - South, 4 - West
