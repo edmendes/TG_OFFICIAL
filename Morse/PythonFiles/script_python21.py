@@ -24,6 +24,7 @@ num1 = 0.0; old_position_x =0.0; old_position_y = 0.0; direction_factor = 0.0; d
 object_position_x = 0.0; object_position_y =0.0; wind_rose = 0.0
 bearing_angle = 0; ref2 = 0; diffx = 0.0; diffy = 0.0
 previousError = 0; Integral = 0
+final_choice = 100
 
 
 # get the laser messages
@@ -370,7 +371,61 @@ def turning_around(distance_between_objects_x, distance_between_objects_y,wind_r
 
     pub.publish(speed)
     r.sleep()   
+
+
+def wind_rose_function(wind_rose, objective_wind_rose):
+
+    final_choice = 100
+    last_state = wind_rose #consider the last_state, i. e. before it enter in crossroad zone it store the direction (north, east, south, west) of last movement
+
+    if (objective_wind_rose == 1): #it is the direction objetive: 1 - North
+
+        if(last_state == 1):    #I'm going North and I want to keep going North
+            final_choice = 3    #Go Ahead
+        elif (last_state == 2): #I'm going East and I want to going North
+            final_choice = 0    #Turn_Left
+        elif (last_state == 3): #I'm going South and I want to going North
+            final_choice = 2    #U-Turn
+        elif (last_state == 4): #I'm going Westand I want to going North
+            final_choice = 1    #Turn_Right
     
+    elif (objective_wind_rose == 2): #it is the direction objetive: 2 - East
+
+        if(last_state == 1):    #I'm going North and I want to going East
+            final_choice = 1    #Turn_Right
+        elif (last_state == 2): #I'm going East and I want to going East
+            final_choice = 3    #Go Ahead
+        elif (last_state == 3): #I'm going South and I want to going East
+            final_choice = 0    #Turn_Left
+        elif (last_state == 4): #I'm going West and I want to going East
+            final_choice = 2    #U-Turn
+    
+    elif (objective_wind_rose == 3): #it is the direction objetive: 3 - South
+
+        if(last_state == 1):
+            final_choice = 2    #U-Turn
+        elif (last_state == 2):
+            final_choice = 1    #Turn_Right
+        elif (last_state == 3):
+            final_choice = 3    #Go Ahead
+        elif (last_state == 4):
+            final_choice = 0    #Turn_Left
+
+    elif (objective_wind_rose == 4): #it is the direction objetive: 4 - West
+        if(last_state == 1):
+            final_choice = 0    #Turn_Left
+        elif (last_state == 2):
+            final_choice = 2    #U-Turn
+        elif (last_state == 3):
+            final_choice = 1    #Turn_Right
+        elif (last_state == 4): 
+            final_choice = 3     #Go Ahead               
+    else:
+        print("do nothing")
+        final_choice = 100
+
+    return final_choice
+
 def PID(wanted_value, current_value):
     global previousError, Integral
     Kp = 0.5 #this constants were attributed based on tests. 
@@ -404,6 +459,9 @@ def detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3, turn_choice
         laser_max_option = 4.9
 
     elif turn_choice == 2:
+        minimum_laser_difference = 1
+        laser_max_option = 4.9
+    else: 
         minimum_laser_difference = 1
         laser_max_option = 4.9
 
@@ -496,9 +554,11 @@ while not rospy.is_shutdown():
 
     i1, i2, i3 = object_scenary_position(index_value, angle_to_object,min_range, z1)
 
-    detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3, 2) #the last statement indicates if is turning left - 0 or right - 1, go back -2 or go ahead - 3 and also keeping the movement
-
+    final_choice =  wind_rose_function(wind_rose, 4)
     
+    detecting_sidewalk(lateral_laser, lateral_laser_max, i1, i2, i3, final_choice) #the last statement indicates if is turning left - 0 or right - 1, go back -2 or go ahead - 3 and also keeping the movement
+
+
     if direction_factor == 1:
         print("Going North")
     elif direction_factor == 2:

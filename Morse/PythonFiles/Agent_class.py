@@ -15,9 +15,11 @@ from tf.transformations import euler_from_quaternion
 from math import atan2
 import numpy as np
 
-class Agent():
+deltaX = 0.0; deltaY =0.0; direction_factor = 0;  
+num1 = 0.0
 
-    direction_factor = 0; deltaX =0.0; deltaY = 0.0
+class Agent():
+    
     
     def __init__(self):
               
@@ -35,7 +37,7 @@ class Agent():
         self.rate = rospy.Rate(4)
         
         self.heading_angle = 0.0
-        self.num1 = 0.0
+        
 
     def callback_pose(self, msg):
 
@@ -98,66 +100,60 @@ class Agent():
             return 0, 0
 
     def direction(self, pose_x, pose_y):
+        global num1 
+        global old_position_x, old_position_y, deltaX, deltaY, direction_factor     
+
+        tolerance_angle = 0.2
+
+        if (num1 < 2): #the num1 is a buffer, the value of x and y should be stored for 0.03s to compare to a current value.
+            old_position_x = pose_x
+            old_position_y = pose_y
+            time.sleep(0.01)
+            #print("This is x: %.2f and this is y: %.2f" %(old_position_x,old_position_y))
+            num1 = num1 + 1
+
+        elif (num1 >= 2 and num1 <= 4):
+            
+            time.sleep(0.01)
+            num1 = num1 + 1
+
+        else:
+            deltaX =  pose_x - old_position_x #deltaX is the x position difference between present and a moment 0.05s ago 
+            deltaY = pose_y - old_position_y #deltaY is the y position difference between present and a moment 0.05s ago
+            """print("This is x2: %.4f and this is x1: %.4f,DeltaX: %.4f" %(pose_x, old_position_x,deltaX))
+            print("This is y2: %.4f and this is y1: %.4f, DeltaY: %.4f " %(pose_y, old_position_y, deltaY))"""
+            num1 = 0
+
+            if (deltaX > -tolerance_angle and deltaX < tolerance_angle  and deltaY > tolerance_angle ): #in this case x do not change too much and y is increasing faster which indicates that the car is going to North
+                direction_factor = 1
+            elif(deltaX > tolerance_angle  and deltaY> -tolerance_angle and  deltaY < tolerance_angle ):#in this case y do not change too much and x is increasing faster which indicates that the car is going to East
+                direction_factor = 2
+            elif(deltaX > - tolerance_angle  and deltaX < tolerance_angle  and deltaY < -tolerance_angle  ): #in this case x do not change too much and y is decreasing faster which indicates that the car is going to South
+                direction_factor = 3
+            elif(deltaX < -tolerance_angle  and deltaY > - tolerance_angle  and deltaY < tolerance_angle  ): #in this case y do not change too much and x is decreasing faster which indicates that the car is going West
+                direction_factor = 4
+            else :
+                direction_factor = 5 #an exception to all those cases
+
+            
         
-        print(pose_x, pose_y)
-
-        try:
-            if (self.num1 < 2): #the num1 is a buffer, the value of x and y should be stored for 0.03s to compare to a current value.
-                deltaX=deltaX
-                deltaY=deltaY
-                direction_factor = direction_factor
-                
-                old_position_x = pose_x
-                old_position_y = pose_y
-                time.sleep(0.01)
-                #print("This is x: %.2f and this is y: %.2f" %(old_position_x,old_position_y))
-                self.num1 = self.num1 + 1
-
-            elif (self.num1 >= 2 and self.num1 <= 4):
-                deltaX=deltaX
-                deltaY=deltaY
-                direction_factor = direction_factor
-                
-                time.sleep(0.01)
-                self.num1 = self.num1 + 1
-
-            else:
-                deltaX =  pose_x - old_position_x #deltaX is the x position difference between present and a moment 0.05s ago 
-                deltaY = pose_x - old_position_y #deltaY is the y position difference between present and a moment 0.05s ago
-                #print("This is x2: %.4f and this is x1: %.4f,DeltaX: %.4f" %(x, old_position_x,deltaX))
-                #print("This is y2: %.4f and this is y1: %.4f, DeltaY: %.4f " %(y, old_position_y, deltaY))
-                self.num1 = 0
-
-                if (deltaX > -tolerance_angle and deltaX < tolerance_angle  and deltaY > tolerance_angle ): #in this case x do not change too much and y is increasing faster which indicates that the car is going to North
-                    direction_factor = 1
-                elif(deltaX > tolerance_angle  and deltaY> -tolerance_angle and  deltaY < tolerance_angle ):#in this case y do not change too much and x is increasing faster which indicates that the car is going to East
-                    direction_factor = 2
-                elif(deltaX > - tolerance_angle  and deltaX < tolerance_angle  and deltaY < -tolerance_angle  ): #in this case x do not change too much and y is decreasing faster which indicates that the car is going to South
-                    direction_factor = 3
-                elif(deltaX < -tolerance_angle  and deltaY > - tolerance_angle  and deltaY < tolerance_angle  ): #in this case y do not change too much and x is decreasing faster which indicates that the car is going West
-                    direction_factor = 4
-                else :
-                    direction_factor = 5 #an exception to all those cases
-
-                return direction_factor, deltaX, deltaY 
         
-        except:
-            return 0, 0, 0 
 
     def agent_action(self):
         rospy.loginfo("Estoy Ca")
         
         while not rospy.is_shutdown():
 
-            print("robot position: (X:%.2f Y:%.2f, Heading_angle: %.2f" % (self.pose.pose.position.x, self.pose.pose.position.y, self.heading_angle))
+            #print("robot position: (X:%.2f Y:%.2f, Heading_angle: %.2f" % (self.pose.pose.position.x, self.pose.pose.position.y, self.heading_angle))
             
             index_value, angle_to_object, min_range = self.laser_information(self.laser.ranges, self.laser.angle_increment)
-            print(index_value, angle_to_object, min_range)
+            #print(index_value, angle_to_object, min_range)
 
             lateral_laser, lateral_laser_max = self.laser1_information(self.laser1.ranges)
-            print(lateral_laser, lateral_laser_max)
+            #print(lateral_laser, lateral_laser_max)
 
-            direction_factor, deltaX, deltaY = self.direction(self.pose.pose.position.x, self.pose.pose.position.y)
+            self.direction(self.pose.pose.position.x, self.pose.pose.position.y)
+            
             print(direction_factor, deltaX, deltaY)
 
             self.rate.sleep()
