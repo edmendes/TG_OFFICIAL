@@ -18,6 +18,7 @@ class BorderLimits():
 
     def border_limit(self,dx, dy, road_type): 
         print("aa")
+        
         if road_type == 0 and dy%2 <> 0 and dx == self.limit_min_line: #it was in a avenue in line 1
             
             if dy == self.limit_min_collumn:
@@ -62,11 +63,13 @@ class BorderLimits():
             print("Going ahead")
             
 
-        return item, random1
+        return random1 or "default"
+    
 
-if __name__=='__main__':   
+
+"""if __name__=='__main__':   
     border = BorderLimits()
     item, random1 = border.border_limit(5,11,0)
     print(item)
-    print(random1)
+    print(random1)"""
     

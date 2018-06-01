@@ -110,9 +110,9 @@ class GridData():
 
         #if relation = 1 then the state is in a crossroad (left-right-ahead actions required)
         if(np.around(r_dimension,1) == 1.0):
-            state = "crossroad"
+            state = 0 #"crossroad"
         #otherwise the robot is in a simple avenue (ahead action required)
         else:
-            state = "avenue"
+            state = 1 #"avenue"
         return x_min, x_max, y_min, y_max, grid, state
     
