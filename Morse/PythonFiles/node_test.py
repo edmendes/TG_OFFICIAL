@@ -50,7 +50,6 @@ class Node():
         """
         Others attributes instances 
         """
-        self.valid_actions = [1, 2, 4]
         self.heading_angle = 0.0
         self.bearing_angle = 0.0
         self.direction_factor = 0
@@ -564,29 +563,29 @@ class Node():
     Starting and processing ROS Node
     """
     def agent_go(self):
-        random1= 0
+        action= 0
         
         while not rospy.is_shutdown():
             print "robot position: (X:%.2f Y:%.2f)" % (self.pose.pose.position.x, self.pose.pose.position.y) 
             
-            x_min, x_max, y_min, y_max, grid_1, state = grid.get_grid_state(self.pose.pose.position.x, self.pose.pose.position.y)
+            x_min, x_max, y_min, y_max, state, road_type = grid.get_grid_state(self.pose.pose.position.x, self.pose.pose.position.y)
             """
             Check if robot is in a grid and get which one is current
             """
             
             try:
-                if random1 == 100 and state == 0:
-                    random1 = BorderLimits().border_limit(grid_1[:,:1].item(0),grid_1[:,1:2].item(0), state)
-                elif state == 1:
-                    random1 = 100
+                if action == 100 and road_type == 0:
+                    action = BorderLimits().border_limit(state[:,:1].item(0),state[:,1:2].item(0), state)
+                elif road_type == 1:
+                    action = 100
                 else:
-                    random1= random1
+                    action= action
             except IndexError:
-                random1 = 100
+                action = 100
                 pass
 
             if (x_min < self.pose.pose.position.x < x_max) and (y_min < self.pose.pose.position.y < y_max): 
-                print grid_1#"Im in a grid and my state is %s and grid %s" % (state, grid)
+                print state#"Im in a grid and my state is %s and grid %s" % (state, grid)
                 """
                 if true, the moviment is started
                 """
@@ -600,13 +599,13 @@ class Node():
                 
                 distance_between_objects_x, distance_between_objects_y = self.object_scenary_position(index_value, angle_to_object, min_range, self.direction_factor, self.pose.pose.position.x, self.pose.pose.position.y)
                 
-                final_choice = self.wind_rose_function(self.wind_rose, random1) #second attribute: 1 - Want to go North, 2 - Want to go East, 3 - Want to go South, 4 - Want to go West #choice is the Q learning option
+                final_choice = self.wind_rose_function(self.wind_rose, action) #second attribute: 1 - Want to go North, 2 - Want to go East, 3 - Want to go South, 4 - Want to go West #choice is the Q learning option
                                                                     
                 self.detecting_sidewalk(lateral_laser, lateral_laser_max, distance_between_objects_x, distance_between_objects_y, self.wind_rose, final_choice)
                 
-                print("Direction choice: %d" %random1)
+                print("Direction choice: %d" %action)
 
-                print(random1)
+                print(action)
             else:
                 print "Im out of a grid -- something wrong is happening"
             

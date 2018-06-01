@@ -22,11 +22,11 @@ class BorderLimits():
         if road_type == 0 and dy%2 <> 0 and dx == self.limit_min_line: #it was in a avenue in line 1
             
             if dy == self.limit_min_collumn:
-                item = [2,3] #West and South 
+                item = [2,3] #East and South 
                 random1 = random.choice(item)
 
             elif dy == self.limit_max_collumn:
-                item = [3,4] #South, East
+                item = [3,4] #South, West
                 random1 = random.choice(item)
                 
             else:
