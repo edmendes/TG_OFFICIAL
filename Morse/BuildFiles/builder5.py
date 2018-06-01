@@ -452,7 +452,7 @@ atrv.append(motion)
 motion.add_interface('ros', topic='/cmd_vel')
 
 # Set the environment
-env = Environment('/home/eduardo/TG_OFFICIAL/Morse/estacionamento')
+env = Environment('/home/eduardo/TG_OFFICIAL/Morse/autoroad')
 env.set_camera_location([-26.5, 27, 2])
 env.set_camera_rotation([1.0470, 0, 3*0.7854])
 atrv.add_default_interface('ros')
