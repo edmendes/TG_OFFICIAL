@@ -434,10 +434,10 @@ class ReactiveAgent():
         Differential = error - previousError
 
         PIDvalue = (Kp*Proportional) + (Ki*Integral) + (Kd*Differential)
-        print("Error: %.7f" %error)
+        """print("Error: %.7f" %error)
         print("Proportional: %.7f" %Proportional)
         print("Integral: %.7f" %Integral)
-        print("Differential: %.7f" %Differential)
+        print("Differential: %.7f" %Differential)"""
         previousError = abs(error) - abs(previousError)
 
         return PIDvalue
