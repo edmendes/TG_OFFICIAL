@@ -28,8 +28,8 @@ class BorderLimits():
             elif dy == self.limit_max_collumn:
                 item = [3,4] #South, West
                 random1 = random.choice(item)
-                
-            else:
+                 
+            elif self.limit_min_collumn< dy < self.limit_max_collumn:
                 item = [2,3,4] #West, South, East
                 random1 = random.choice(item)
 

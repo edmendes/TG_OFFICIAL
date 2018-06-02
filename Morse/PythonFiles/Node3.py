@@ -13,6 +13,7 @@ from geometry_msgs.msg import Twist
 from tf.transformations import euler_from_quaternion
 from GridData2 import GridData
 from BorderLimits import BorderLimits
+from Brain import Brain
 
 """
 Global variables
@@ -294,7 +295,8 @@ class Node():
             elif (last_state == 4): 
                 final_choice = 3     #Go Ahead               
         else:
-            print("do nothing")
+            pass
+            #print("do nothing")
 
         return final_choice
    
@@ -363,7 +365,7 @@ class Node():
             if abs(angle_objective) > 0.1:
                 print("Xo2")
                 
-                self.speed.linear.x = 1.2
+                self.speed.linear.x = 1.3
                 self.speed.angular.z = 0.3
                 
             else:
@@ -401,7 +403,7 @@ class Node():
             if abs(angle_objective) > 0.1:
                 print("Xo3")
                 
-                self.speed.linear.x = 1.2
+                self.speed.linear.x = 1.3
                 self.speed.angular.z = 0.3
             
             else:
@@ -432,7 +434,7 @@ class Node():
 
             if abs(angle_objective) > 0.1:
                 print("Xo4")
-                self.speed.linear.x = 1.2
+                self.speed.linear.x = 1.3
                 self.speed.angular.z = 0.3
             else:
                 ref2 = 0
@@ -564,31 +566,55 @@ class Node():
     """
     def agent_go(self):
         action= 0
+        step = 0
+        state_row_next = 100; state_col_next =100
+        reward = 0
         
         while not rospy.is_shutdown():
-            print "robot position: (X:%.2f Y:%.2f)" % (self.pose.pose.position.x, self.pose.pose.position.y) 
+            #print "robot position: (X:%.2f Y:%.2f)" % (self.pose.pose.position.x, self.pose.pose.position.y) 
             
             x_min, x_max, y_min, y_max, state, road_type = grid.get_grid_state(self.pose.pose.position.x, self.pose.pose.position.y)
             """
             Check if robot is in a grid and get which one is current
             """
             
-            try:
-                if action == 100 and road_type == 0:
-                    action = BorderLimits().border_limit(state[:,:1].item(0),state[:,1:2].item(0), road_type)
-                elif road_type == 1:
-                    action = 100
-                else:
-                    action= action
-            except IndexError:
-                action = 100
-                pass
+            
+            if (x_min < self.pose.pose.position.x < x_max) and (y_min < self.pose.pose.position.y < y_max):
+                try:
+                    if action == 100 and road_type == 0: # the reaches the crossroad for the first time
+                        action = BorderLimits().border_limit(state[:,:1].item(0),state[:,1:2].item(0), road_type) #get an action randomly using the current state
+                        state_row_next, state_col_next = brain.get_next_state(state[:,:1].item(0),state[:,1:2].item(0), action) #preview the next state due to current action in the current state
+                        reward = brain.get_reward(state[:,:1].item(0),state[:,1:2].item(0)) #get the reward accordingly with the current state
+                        print ((state[:,:1].item(0),state[:,1:2].item(0)), action, reward, (state_row_next, state_col_next))
+                        step = step + 1 #sum the amount of steps
 
-            if (x_min < self.pose.pose.position.x < x_max) and (y_min < self.pose.pose.position.y < y_max): 
+                        """if reward = 100:
+                            brain.update_qtable(state,action, 100, next_state)
+                            memory.get_steps(step,episode)
+                            brain.finish()
+                            """
+
+
+                    elif road_type == 1:
+                        action = 100
+                        state_row_next, state_col_next = state_row_next, state_col_next
+                        reward = reward
+                    else:
+                        action= action
+                        state_row_next, state_col_next = state_row_next, state_col_next
+                        reward = reward
+                
+                
+                except IndexError:
+                    action = 100
+                    pass 
+
+
                 print state#"Im in a grid and my state is %s and grid %s" % (state, grid)
                 """
                 if true, the moviment is started
                 """
+                
                 index_value, angle_to_object, min_range = self.laser_information(self.laser.ranges, self.laser.angle_increment)
                 #print(index_value, angle_to_object, min_range)
 
@@ -605,7 +631,11 @@ class Node():
                 
                 print("Direction choice: %d" %action)
 
-                print(action)
+                print("Steps %d" %step)
+
+                print("Going to State (%d, %d), the previous reward was %d" %(state_row_next, state_col_next, reward))
+            
+
             else:
                 print "Im out of a grid -- something wrong is happening"
             
@@ -615,6 +645,7 @@ if __name__=='__main__':
     rospy.init_node("sensor_node") #iniciate ROS node
     sensor_node = Node() #instance the GridData class as an object named as grid
     grid = GridData()
+    brain =  Brain()
     sensor_node.agent_go() #1 - North, 2 - East, 3 - South, 4 - West
     
     
