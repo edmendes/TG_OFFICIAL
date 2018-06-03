@@ -12,7 +12,7 @@ from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Twist
 from tf.transformations import euler_from_quaternion
 from GridData2 import GridData
-from BorderLimits import BorderLimits
+from BorderLimits2 import BorderLimits
 from Brain import Brain
 
 """
@@ -582,10 +582,10 @@ class Node():
             if (x_min < self.pose.pose.position.x < x_max) and (y_min < self.pose.pose.position.y < y_max):
                 try:
                     if action == 100 and road_type == 0: # the reaches the crossroad for the first time
-                        action = BorderLimits().border_limit(state[:,:1].item(0),state[:,1:2].item(0), road_type) #get an action randomly using the current state
+                        action = limits.border_limit(state[:,:1].item(0),state[:,1:2].item(0), road_type) #get an action randomly using the current state
                         state_row_next, state_col_next = brain.get_next_state(state[:,:1].item(0),state[:,1:2].item(0), action) #preview the next state due to current action in the current state
                         reward = brain.get_reward(state[:,:1].item(0),state[:,1:2].item(0)) #get the reward accordingly with the current state
-                        print ((state[:,:1].item(0),state[:,1:2].item(0)), action, reward, (state_row_next, state_col_next))
+                        brain.update_qtable(state[:,:1].item(0),state[:,1:2].item(0), action, reward, state_row_next, state_col_next)
                         step = step + 1 #sum the amount of steps
 
                         """if reward = 100:
@@ -593,7 +593,6 @@ class Node():
                             memory.get_steps(step,episode)
                             brain.finish()
                             """
-
 
                     elif road_type == 1:
                         action = 100
@@ -609,8 +608,7 @@ class Node():
                     action = 100
                     pass 
 
-
-                print state#"Im in a grid and my state is %s and grid %s" % (state, grid)
+                #print state#"Im in a grid and my state is %s and grid %s" % (state, grid)
                 """
                 if true, the moviment is started
                 """
@@ -631,9 +629,10 @@ class Node():
                 
                 print("Direction choice: %d" %action)
 
-                print("Steps %d" %step)
+                #print("Steps %d" %step)
 
-                print("Going to State (%d, %d), the previous reward was %d" %(state_row_next, state_col_next, reward))
+                #print("Going to State (%d, %d), the previous reward was %d" %(state_row_next, state_col_next, reward))
+                #print("Current State (%d, %d)" %(state[:,:1].item(0),state[:,1:2].item(0)))
             
 
             else:
@@ -646,6 +645,7 @@ if __name__=='__main__':
     sensor_node = Node() #instance the GridData class as an object named as grid
     grid = GridData()
     brain =  Brain()
+    limits = BorderLimits()
     sensor_node.agent_go() #1 - North, 2 - East, 3 - South, 4 - West
     
     

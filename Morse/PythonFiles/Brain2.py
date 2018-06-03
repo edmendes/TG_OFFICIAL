@@ -18,13 +18,11 @@ class Brain():
     Methods
     """
     #criacao da matrix Q
-    def get_matrixQ(self):
+    def create_matrixQ(self):
         try:
-            tableQ = np.loadtxt('test.csv', delimiter=",", skiprows=1)
+            Q = np.loadtxt('test.csv', delimiter=",", skiprows=1)
         except:
-            tableQ = np.zeros((24,4), dtype = int)
-
-        return tableQ
+            Q = np.zeros((24,4), dtype = int)
     """ 
         #episode ==> morse run - find_target == true / finish()
         if(episode == 1):
@@ -83,34 +81,27 @@ class Brain():
         return state_id
 
     #escolha de acoes 
-    def choose_actions(self, actions, state_row, state_col):
+    def choose_action(self, action):
         if self.epsilon > random.random():
-            action_q = random.choice(actions)
-
-        else:
-            state_id = self.state_q(state_row, state_col) 
-            tableQ = self.get_matrixQ()
-            action_q = 1+np.argmax(tableQ[state_id], axis = 0)
-            
-            if(any(i == action_q for i in actions) == False):
-                action_q = random.choice(actions)
-        
+            action_q = random.choice(action)
+        else: 
+            action_q = self.get_maxQ(state)
         return action_q
         
     def get_next_state(self, state_row, state_col, wind_rose):
     
-        direction = wind_rose
+        direction = wind_rose - 1
 
-        if direction == 1: #going North
+        if direction == 0:
             state_col_next = state_col
             state_row_next = state_row - 2
-        elif direction == 2: #going East
+        elif direction == 1:
             state_col_next = state_col + 2
             state_row_next = state_row
-        elif direction == 3: #going South
+        elif direction == 2:
             state_col_next = state_col 
             state_row_next  = state_row + 2
-        elif direction == 4: #Going West
+        elif direction == 3:
             state_col_next = state_col - 2
             state_row_next  = state_row
 
@@ -130,15 +121,6 @@ class Brain():
             reward = -1
         return reward
         
-    def update_qtable(self, state_row, state_col, action, reward, next_state_row, next_state_col):
 
-        state_id = self.state_q(state_row, state_col) 
-        next_state_id = self.state_q(next_state_row, next_state_col)
-
-        tableQ = self.get_matrixQ()
-
-        tableQ[state_id][action-1] = (1-self.alpha)*tableQ[state_id][action-1] + self.alpha*reward + self.alpha*self.gamma*max(tableQ[next_state_id])
-
-        np.savetxt('test.csv', tableQ, fmt='%.2f', delimiter=',', header=" #1,  #2,  #3,  #4 ")
 
     #obter maxQ
