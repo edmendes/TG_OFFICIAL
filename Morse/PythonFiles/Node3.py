@@ -14,6 +14,8 @@ from tf.transformations import euler_from_quaternion
 from GridData2 import GridData
 from BorderLimits2 import BorderLimits
 from Brain import Brain
+from pynput.keyboard import Key, Controller
+
 
 """
 Global variables
@@ -587,6 +589,8 @@ class Node():
                         reward = brain.get_reward(state[:,:1].item(0),state[:,1:2].item(0)) #get the reward accordingly with the current state
                         brain.update_qtable(state[:,:1].item(0),state[:,1:2].item(0), action, reward, state_row_next, state_col_next)
                         step = step + 1 #sum the amount of steps
+                        Controller().release(Key.f11)
+                        
 
                         """if reward = 100:
                             brain.update_qtable(state,action, 100, next_state)

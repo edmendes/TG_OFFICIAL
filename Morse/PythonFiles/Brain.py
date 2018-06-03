@@ -2,6 +2,7 @@ import numpy as np
 import random
 import csv 
 from tempfile import TemporaryFile
+from pynput.keyboard import Key, Controller
 
 #from Memory import Memory
 
@@ -14,6 +15,7 @@ class Brain():
         self.gamma = 0.8
         self.epsilon = 0.2
         self.episode = 0
+        self.keyboard = Controller()
     """
     Methods
     """
@@ -126,6 +128,11 @@ class Brain():
         #if (grid[:,:1] == 5  and grid[:,1:2] == 6):
         if(state_row == 5 and state_col == 7):
             reward = 100
+            Controller().press(Key.f11)
+            Controller().press(Key.f11)
+            Controller().press(Key.f11)
+            Controller().press('a')
+            Controller().release('a')
         else:
             reward = -1
         return reward
