@@ -12,8 +12,13 @@ def callback_laser(msg):
     laser_raw = msg.ranges
     laser_float = [float(r) for r in laser_raw]
  
+<<<<<<< HEAD:Morse/PythonFiles/script_python.py
     if np.min(laser_float)<0.5:
         print ("I bumped at (X:%.2f Y:%.2f). Please Reverse." % (curr_pose[0],curr_pose[1]))
+=======
+    if np.min(laser_float)<5.0:
+        print "I bumped at (X:%.2f Y:%.2f). Please Reverse."%(curr_pose[0],curr_pose[1])
+>>>>>>> d40cd9a15276763b3a0d8182f263e583e33ce2e4:morse_tut/obstacle_check.py
  
 # get the odometry messages
 def callback_odom(msg):
