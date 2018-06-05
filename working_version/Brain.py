@@ -91,13 +91,21 @@ class Brain():
             action_q = random.choice(actions)
 
         else:
-            state_id = self.state_q(state_row, state_col) 
+            """state_id = self.state_q(state_row, state_col) 
             tableQ = self.get_matrixQ()
             action_q = 1+np.argmax(tableQ[state_id], axis = 0)
+            if(any(i == action_q for i in actions) == False):
+                action_q = random.choice(actions)"""
+            state_id = self.state_q(state_row, state_col) 
+            tableQ = self.get_matrixQ()
+            action_q = 1+np.argmax(tableQ[state_id], axis = 0) #get the max value 
             
             if(any(i == action_q for i in actions) == False):
-                action_q = random.choice(actions)
-        
+                p = np.argsort(tableQ[state_id], axis =0)[-3:][::-1] #if the max value is not among the allowed actions it gets the second largest value
+                action_q = p[1] +1 
+
+                if(any(i == action_q for i in actions)== False)[-3:][::-1] : #if the max value keeps not among the allowed action it gets the third largest value
+                    action_q = p[2] +1
         return action_q
     
     #get the next_state based on its current direction and state
