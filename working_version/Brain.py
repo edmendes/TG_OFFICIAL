@@ -104,7 +104,7 @@ class Brain():
                 p = np.argsort(tableQ[state_id], axis =0)[-3:][::-1] #if the max value is not among the allowed actions it gets the second largest value
                 action_q = p[1] +1 
 
-                if(any(i == action_q for i in actions)== False)[-3:][::-1] : #if the max value keeps not among the allowed action it gets the third largest value
+                if(any(i == action_q for i in actions)== False): #if the max value keeps not among the allowed action it gets the third largest value
                     action_q = p[2] +1
         return action_q
     

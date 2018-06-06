@@ -603,14 +603,9 @@ class Node():
                             last_tableQ = brain.get_matrixQ()
                             memory.reset_agent(step, curr_episode, start_point, start_time, last_tableQ)
                             step = 0
+                            start_time = strftime("%Y-%m-%d %H:%M:%S", localtime()) #get the start datetime of n-episode (n=1,2,3,4...) -- control effects
                         Controller().release(Key.f11)
                         
-                        """if reward = 100:
-                            brain.update_qtable(state,action, 100, next_state)
-                            memory.get_steps(step,episode)
-                            brain.finish()
-                            """
-
                     elif road_type == 1:
                         print(state)
                         print(state)
