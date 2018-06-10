@@ -579,7 +579,7 @@ class Node():
         /BEGIN - setting data to process episode results 
         """
         start_time = strftime("%Y-%m-%d %H:%M:%S", localtime()) #get the start datetime of n-episode (n=1,2,3,4...) -- control effects
-        start_point = "Start3" #set the start point -- control the policy to follow
+        start_point = "Start6" #set the start point -- control the policy to follow
         """
         /END - setting data to process episode results 
         """

@@ -1,8 +1,8 @@
 from morse.builder import *
  
 atrv = ATRV() #the robot
-atrv.translate(x=145.15948, y=-30.55054, z=-5) #starting location
-atrv.rotate(z=3.14)
+atrv.translate(x=167.83751, y=-153.42661, z=-5) #starting location
+atrv.rotate(z=3.14/2)
 
 #adding a dumb robot 
 atrv1 = ATRV() #the robot
@@ -453,6 +453,6 @@ motion.add_interface('ros', topic='/cmd_vel')
 
 # Set the environment
 env = Environment('/home/eduardo/TG_OFFICIAL/Morse/autoroad')
-env.set_camera_location([145.16017, -30.55054, 50])
+env.set_camera_location([167.83751, -153.42661, 50])
 env.set_camera_rotation([0, 0, 2*0.7854])
 atrv.add_default_interface('ros')

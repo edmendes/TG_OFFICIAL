@@ -14,7 +14,7 @@ class Brain():
     def __init__(self):
         self.alpha = 0.2
         self.gamma = 0.8
-        self.epsilon = 0.2
+        self.epsilon = 0.5
         self.episode = 0
         self.keyboard = Controller()
     """
@@ -89,6 +89,8 @@ class Brain():
     def choose_actions(self, actions, state_row, state_col):
         if self.epsilon > random.random():
             action_q = random.choice(actions)
+            #self.epsilon = self.epsilon - 0.05
+            #print self.epsilon
 
         else:
             """state_id = self.state_q(state_row, state_col) 
@@ -101,11 +103,15 @@ class Brain():
             action_q = 1+np.argmax(tableQ[state_id], axis = 0) #get the max value 
             
             if(any(i == action_q for i in actions) == False):
-                p = np.argsort(tableQ[state_id], axis =0)[-3:][::-1] #if the max value is not among the allowed actions it gets the second largest value
+                p = np.argsort(tableQ[state_id], axis =0)[-4:][::-1] #if the max value is not among the allowed actions it gets the second largest value
                 action_q = p[1] +1 
 
                 if(any(i == action_q for i in actions)== False): #if the max value keeps not among the allowed action it gets the third largest value
                     action_q = p[2] +1
+                
+                    if(any(i == action_q for i in actions)== False):
+                        action_q = p[3] +1
+
         return action_q
     
     #get the next_state based on its current direction and state
