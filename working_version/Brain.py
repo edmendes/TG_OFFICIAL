@@ -115,6 +115,7 @@ class Brain():
             print(action_q)
             print(self.get_matrixQ()[self.state_q(state_row, state_col)])
             print(np.argmax(tableQ[state_id], axis = 0) + 1)
+            
         return action_q
     
     #get the next_state based on its current direction and state
