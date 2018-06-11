@@ -41,7 +41,7 @@ class BorderLimits():
                 item = [1,2,3] #North, East, South
                 action = brain.choose_actions(item, dx, dy)
             elif dy == self.limit_max_collumn:
-                item = [1,3, 4] #North, South, West
+                item = [1, 3, 4] #North, South, West
                 action = brain.choose_actions(item, dx, dy)
             elif dx%2 <> 0:
                 item = [1,2,3,4] #North, East, South, West
