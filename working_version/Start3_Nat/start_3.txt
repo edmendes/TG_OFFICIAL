@@ -1,0 +1,7 @@
+caminho ótimo - 3 steps
+north on [3,10] till [3,8]
+left on [3,7]
+south on [4,7] till [5,7]
+goal! 
+
+[3,9] -> [3,7] -> [5,7]

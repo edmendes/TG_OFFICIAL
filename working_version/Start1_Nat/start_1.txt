@@ -1,0 +1,8 @@
+Robo faz 2 caminhos otimos - por 4 steps
+Caminho ótimo1 - via [4,7]
+>> turn on [2,5]
+>> turn left on [3,6]
+>> turn right on [4,7]
+>> goal!
+Caminho otimo2 - via [5,6]
+>> turn on [2,5]

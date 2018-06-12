@@ -1,0 +1,7 @@
+caminho otimo - 4 steps
+start on [7,2]
+turn left on [7,3]
+go south on [6,3]
+turn right on [5,3]
+go north on [5,4] till [5,7]
+goal!

@@ -50,11 +50,13 @@ class BorderLimits():
 
         elif road_type == 0 and dy%2 <> 0 and dx == self.limit_max_line:
             if  dy == self.limit_min_collumn:
-                item = [1,2] #North, East         
+                item = [1,2] #North, East    
                 action = brain.choose_actions(item, dx, dy)
+
             elif dy == self.limit_max_collumn:
                 item = [1,4] #North, West
                 action = brain.choose_actions(item, dx, dy)
+
             else:
                 item = [1,2,4] #North, East, West
                 action = brain.choose_actions(item, dx, dy)
