@@ -1,0 +1,5 @@
+caminho otimo - 2 steps
+start on [7,6]
+turn left on [7,7]
+go south on [6,7] till [5,7]
+goal!
