@@ -1,0 +1,15 @@
+caminho otimo - 5 steps
+go north on [1,4]
+turn right on [1,5]
+go south on [2,5]
+turn left on [3,5]
+go north on [3,6] till [3,7]
+turn right on [3,7]
+go south on [4,7] till [5,7]
+goal!
+
+----
+
+INSIGHT:
+- nem sempre o aprendizado converte para o caminho ótimo
+- se o agente recebe a recompensa max no caminho de X steps tomado o maior numero de vezes, esse persistira nesse caminho.

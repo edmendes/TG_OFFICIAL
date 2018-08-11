@@ -1,0 +1,19 @@
+caminho otimo - 4 steps
+start on [4,1]
+north on [5,1]
+turn left on [5,2]
+go north on [5,2] till [5,7]
+goal! 
+
+segundo caminho otimo - 6 steps - preferivel noas ultimos episodios
+start on [4,1]
+north on [5,1]
+turn left on [5,2]
+north till [5,4]
+right on [5,5]
+south on [6,5]
+turn on [6,5]
+left on [5,5]
+north [5,6] till [5,7]
+goal! 
+

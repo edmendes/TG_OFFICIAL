@@ -89,24 +89,33 @@ class Brain():
     def choose_actions(self, actions, state_row, state_col):
         if self.epsilon > random.random():
             action_q = random.choice(actions)
+            #self.epsilon = self.epsilon - 0.05
+            print self.epsilon
 
         else:
-            """state_id = self.state_q(state_row, state_col) 
+            """state_id = self.state_q(state_row, state_col) s
             tableQ = self.get_matrixQ()
             action_q = 1+np.argmax(tableQ[state_id], axis = 0)
             if(any(i == action_q for i in actions) == False):
                 action_q = random.choice(actions)"""
             state_id = self.state_q(state_row, state_col) 
             tableQ = self.get_matrixQ()
-            action_q = 1+np.argmax(tableQ[state_id], axis = 0) #get the max value 
+            p = np.argsort(tableQ[state_id], axis = 0)[-4:][::-1]
+            action_q = p[0] +1 #get the max value 
             
             if(any(i == action_q for i in actions) == False):
-                p = np.argsort(tableQ[state_id], axis =0)[-3:][::-1] #if the max value is not among the allowed actions it gets the second largest value
-                action_q = p[1] +1 
+                action_q = p[1] +1 #if the max value is not among the allowed actions it gets the second largest value
 
-                if(any(i == action_q for i in actions)== False): #if the max value keeps not among the allowed action it gets the third largest value
-                    action_q = p[2] +1
-        return action_q
+                if(any(i == action_q for i in actions)== False): 
+                    action_q = p[2] +1 #if the max value keeps not among the allowed action it gets the third largest value
+                
+                    if(any(i == action_q for i in actions)== False):
+                        action_q = p[3] +1
+
+            print(action_q)
+            print(self.get_matrixQ()[self.state_q(state_row, state_col)])
+            print(np.argmax(tableQ[state_id], axis = 0) + 1)
+           
     
     #get the next_state based on its current direction and state
     def get_next_state(self, state_row, state_col, wind_rose):
