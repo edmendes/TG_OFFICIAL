@@ -1,11 +1,11 @@
 
-README
+**Q-Learning Autonomous mobile robot - ROS + MORSE Simulation**
 
 This project was developed by Eduardo Mendes and Nathalia Paula to accomplish the final requirements for the course of Bachelor's in Instrumentation, Automation and Robotic Engineering at University Federal of ABC, located in Santo André, Brazil.
 
-The main objective is to develop an autonomous robot able to move in a predetermined environment, moving from point A to point B. The robot must learn the best routes and after some iterations, it should find an optimal solution. Therefore, it was used the Q-Learning theory.
+The main objective is to develop an autonomous mobile robot able to move in a unknown 3D environment, moving from a ramdom point and find a fixed target destination. The robot must learn from this policy using Q-Learning algorithm:
 
-Watch the simulation results here: https://youtu.be/q8ctXwmutXo
+> Achieve a fixed (x<sub>t</sub>, y<sub>t</sub>, z<sub>t</sub>) target in a unknown environment from 10 random (x<sub>p</sub>, y<sub>p</sub>, z<sub>p</sub>) start points, whose number of steps is minimal.
 
 Contributors email:
 
@@ -36,4 +36,14 @@ python Node.py
 > **Obs. 1: the code from "working_version" is the lastest version, which agent was full trained. To reset the learning training, remove "tableq.csv" and "q_evolution.json" files**
 
 > **Obs. 2: remember to change the file .blend location in builder.pya**
+
+Watch the simulation results here: 
+
+<object width="425" height="350">
+  <param name="movie" value="https://youtu.be/q8ctXwmutXo" />
+  <param name="wmode" value="transparent" />
+  <embed src="https://youtu.be/q8ctXwmutXo"
+         type="application/x-shockwave-flash"
+         wmode="transparent" width="425" height="350" />
+</object>
 
