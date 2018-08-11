@@ -33,6 +33,7 @@ Step 3 - Open a new terminal select the folder type:
 python Node.py
 ```
 
-obs: remember to change the file .blend location in builder.pya
-=====
+> **Obs. 1: the code from "working_version" is the lastest version, which agent was full trained. To reset the learning training, remove "tableq.csv" and "q_evolution.json" files**
+
+> **Obs. 2: remember to change the file .blend location in builder.pya**
 
