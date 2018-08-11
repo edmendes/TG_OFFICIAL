@@ -33,17 +33,11 @@ Step 3 - Open a new terminal select the folder type:
 python Node.py
 ```
 
+Watch the simulation results here: https://youtu.be/q8ctXwmutXo
+
 > **Obs. 1: the code from "working_version" is the lastest version, which agent was full trained. To reset the learning training, remove "tableq.csv" and "q_evolution.json" files**
 
 > **Obs. 2: remember to change the file .blend location in builder.pya**
 
-Watch the simulation results here: 
 
-<object width="425" height="350">
-  <param name="movie" value="https://youtu.be/q8ctXwmutXo" />
-  <param name="wmode" value="transparent" />
-  <embed src="https://youtu.be/q8ctXwmutXo"
-         type="application/x-shockwave-flash"
-         wmode="transparent" width="425" height="350" />
-</object>
 
