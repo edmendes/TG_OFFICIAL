@@ -607,12 +607,6 @@ class Node():
 
                         Controller().release(Key.f11)
                         
-                        """if reward = 100:
-                            brain.update_qtable(state,action, 100, next_state)
-                            memory.get_steps(step,episode)
-                            brain.finish()
-                            """
-
                     elif road_type == 1:
                         print(state)
                         print(state)
