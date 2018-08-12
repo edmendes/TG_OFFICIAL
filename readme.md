@@ -31,7 +31,7 @@ Step 1: Open the terminal window and type "roscore", in order to be run ROS.
 Step 2: In another terminal, you must run the builder file. Thus, type:
 
 ```
-morse run builder.py
+morse run builder_base.py
 ```
 
 Step 3 - Open a new terminal select the folder type:
